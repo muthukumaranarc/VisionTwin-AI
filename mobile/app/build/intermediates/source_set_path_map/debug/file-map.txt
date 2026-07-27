@@ -1,0 +1,54 @@
+com.visiontwin.app-savedstate-1.2.1-0 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\01f5d3cfa8e5bf318f02755c3ed4240f\transformed\savedstate-1.2.1\res
+com.visiontwin.app-lifecycle-viewmodel-release-1 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\0c12cead6ce49108d003c1c88ccc73d2\transformed\lifecycle-viewmodel-release\res
+com.visiontwin.app-appcompat-resources-1.6.1-2 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\10ef5cb2d5326dbd5154aab5c79fba7e\transformed\appcompat-resources-1.6.1\res
+com.visiontwin.app-ui-release-3 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\15d8b99c1b253da2f353cb7663c0b9db\transformed\ui-release\res
+com.visiontwin.app-emoji2-1.3.0-4 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\1d5c8157844f6253612e078c2386110f\transformed\emoji2-1.3.0\res
+com.visiontwin.app-activity-1.9.3-5 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\24ff93240478b7e2e14da80dd23a4471\transformed\activity-1.9.3\res
+com.visiontwin.app-ui-text-release-6 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\3277eb3546c683aa18d1c1c11585c7a9\transformed\ui-text-release\res
+com.visiontwin.app-animation-release-7 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\3446fda6a2f8e4f86019d2f534830162\transformed\animation-release\res
+com.visiontwin.app-core-ktx-1.15.0-8 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\38cb8d9f8208a8031e7852fc31c39a67\transformed\core-ktx-1.15.0\res
+com.visiontwin.app-navigation-common-2.8.5-9 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\4851ca6370751d1a3ada9954ee6627a6\transformed\navigation-common-2.8.5\res
+com.visiontwin.app-navigation-compose-2.8.5-10 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\48999e64e319eef0e4386fb5b0d8498b\transformed\navigation-compose-2.8.5\res
+com.visiontwin.app-ui-unit-release-11 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\4b5b8a02bf7d8aa55fca6c256ecce057\transformed\ui-unit-release\res
+com.visiontwin.app-startup-runtime-1.1.1-12 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\51a994c22c71d8e82113b406aa4d4ca2\transformed\startup-runtime-1.1.1\res
+com.visiontwin.app-ui-geometry-release-13 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\51eb5b2c4c26913b9dbc45496585fef4\transformed\ui-geometry-release\res
+com.visiontwin.app-material3-release-14 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\52998f44143d461fb175312ee9e176ec\transformed\material3-release\res
+com.visiontwin.app-tracing-1.2.0-15 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\5630531fc648ac8b972380b9ae31ed73\transformed\tracing-1.2.0\res
+com.visiontwin.app-lifecycle-viewmodel-ktx-2.8.7-16 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\568fd35b8571f0ec15252c79b9185e21\transformed\lifecycle-viewmodel-ktx-2.8.7\res
+com.visiontwin.app-lifecycle-runtime-compose-release-17 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\62285eef92de77a181a686a1c9524576\transformed\lifecycle-runtime-compose-release\res
+com.visiontwin.app-activity-compose-1.9.3-18 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\68ee53871ef033fdcf6cbd70fd7c099d\transformed\activity-compose-1.9.3\res
+com.visiontwin.app-material-icons-core-release-19 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\70781c226fc7810c8fe4aa39e93de393\transformed\material-icons-core-release\res
+com.visiontwin.app-annotation-experimental-1.4.1-20 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\7f925134fbfce132e02064e5c4ade1e1\transformed\annotation-experimental-1.4.1\res
+com.visiontwin.app-profileinstaller-1.3.1-21 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\818b858d07c0ab7721647745bc591ff9\transformed\profileinstaller-1.3.1\res
+com.visiontwin.app-customview-poolingcontainer-1.0.0-22 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\890dccb0a29e434e1990a661d15ad5bd\transformed\customview-poolingcontainer-1.0.0\res
+com.visiontwin.app-savedstate-ktx-1.2.1-23 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\9930eddde7be187538efebea412090c7\transformed\savedstate-ktx-1.2.1\res
+com.visiontwin.app-graphics-path-1.0.1-24 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\9db242ec4ac76db23e4d4ae8d92f0568\transformed\graphics-path-1.0.1\res
+com.visiontwin.app-core-runtime-2.2.0-25 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\a1d1faec5ee01376ed6fdf3fbbc73a54\transformed\core-runtime-2.2.0\res
+com.visiontwin.app-lifecycle-runtime-release-26 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\a65fcda9282468948e1a68b79b7929d1\transformed\lifecycle-runtime-release\res
+com.visiontwin.app-navigation-runtime-2.8.5-27 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\a9ba3bd23968e8741dea975bdb8c1907\transformed\navigation-runtime-2.8.5\res
+com.visiontwin.app-runtime-release-28 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\b240d2bb2288bdb1941ec27c1ad5474c\transformed\runtime-release\res
+com.visiontwin.app-lifecycle-viewmodel-compose-release-29 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\b67500cfbedffbf125e6ca5830a71782\transformed\lifecycle-viewmodel-compose-release\res
+com.visiontwin.app-navigation-common-ktx-2.8.5-30 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\b68dee74174595c33143ee3413d7bc64\transformed\navigation-common-ktx-2.8.5\res
+com.visiontwin.app-foundation-layout-release-31 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\b8fd37173e5203d6760c1d91406cd992\transformed\foundation-layout-release\res
+com.visiontwin.app-lifecycle-runtime-ktx-release-32 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\b9eaa39237cf36c80910437ff98d44da\transformed\lifecycle-runtime-ktx-release\res
+com.visiontwin.app-material-ripple-release-33 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\ba6d806ebd3cdd87731bf78317b96edd\transformed\material-ripple-release\res
+com.visiontwin.app-core-1.15.0-34 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\be3216c8aeb63cab9adb2d6ee4b93506\transformed\core-1.15.0\res
+com.visiontwin.app-ui-util-release-35 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\bf94764694ce70f273d8491876b0f0fd\transformed\ui-util-release\res
+com.visiontwin.app-ui-graphics-release-36 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\c5dcf63c44733c204f6874769e5fca56\transformed\ui-graphics-release\res
+com.visiontwin.app-activity-ktx-1.9.3-37 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\c6afbe5ca7c6ea3ddc60a1a651fabc51\transformed\activity-ktx-1.9.3\res
+com.visiontwin.app-lifecycle-viewmodel-savedstate-2.8.7-38 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\c74d23560f72c3d7d203f7e110f451dc\transformed\lifecycle-viewmodel-savedstate-2.8.7\res
+com.visiontwin.app-runtime-saveable-release-39 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\d230d11570a443690cc4ed3886f295f9\transformed\runtime-saveable-release\res
+com.visiontwin.app-ui-tooling-preview-release-40 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\d273a60dc686f246a03c3cd6b97040d6\transformed\ui-tooling-preview-release\res
+com.visiontwin.app-material-icons-extended-release-41 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\dcb1d5c84060077319cc03d313c807cb\transformed\material-icons-extended-release\res
+com.visiontwin.app-lifecycle-livedata-core-2.8.7-42 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\f036a62249fb4f6d1af29083a6dd3f1a\transformed\lifecycle-livedata-core-2.8.7\res
+com.visiontwin.app-coil-base-2.7.0-43 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\f0a3ec98c3c98c812981c078e283319c\transformed\coil-base-2.7.0\res
+com.visiontwin.app-animation-core-release-44 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\f344e9287cd0bbd7c7235eb9998829eb\transformed\animation-core-release\res
+com.visiontwin.app-foundation-release-45 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\f3f38a7517cf3fc0d693e6da5baaaf3e\transformed\foundation-release\res
+com.visiontwin.app-navigation-runtime-ktx-2.8.5-46 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\f888d91e3ba6d80eddd5dd615ffa9742\transformed\navigation-runtime-ktx-2.8.5\res
+com.visiontwin.app-lifecycle-process-2.8.7-47 C:\Users\Muthu\.gradle\caches\9.0.0\transforms\fd8eee8eda64c2c9ee9ae7582f810577\transformed\lifecycle-process-2.8.7\res
+com.visiontwin.app-resValues-48 C:\Users\Muthu\Documents\Git\VisionTwin AI\mobile\app\build\generated\res\resValues\debug
+com.visiontwin.app-packageDebugResources-49 C:\Users\Muthu\Documents\Git\VisionTwin AI\mobile\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.visiontwin.app-packageDebugResources-50 C:\Users\Muthu\Documents\Git\VisionTwin AI\mobile\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.visiontwin.app-merged_res-51 C:\Users\Muthu\Documents\Git\VisionTwin AI\mobile\app\build\intermediates\merged_res\debug
+com.visiontwin.app-debug-52 C:\Users\Muthu\Documents\Git\VisionTwin AI\mobile\app\src\debug\res
+com.visiontwin.app-main-53 C:\Users\Muthu\Documents\Git\VisionTwin AI\mobile\app\src\main\res
