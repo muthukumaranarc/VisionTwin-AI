@@ -36,5 +36,6 @@ visiontwin:
     provider: ${AI_PROVIDER:mock}
     api-key: ${AI_API_KEY:}
     api-url: ${AI_API_URL:}
-    model: ${AI_MODEL:gemini-1.5-flash}
+    vision-model: ${AI_VISION_MODEL:gemini-3.6-flash}
+    text-model: ${AI_TEXT_MODEL:gemini-3.6-flash}
     embedding-model: ${AI_EMBEDDING_MODEL:text-embedding-004}

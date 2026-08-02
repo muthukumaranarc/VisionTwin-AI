@@ -145,6 +145,12 @@ class VisionTwinRepository(
         else throw Exception("Add reference image failed: ${response.code()}")
     }
 
+    suspend fun getReferenceImages(machineId: String): Result<List<ReferenceImageDto>> = runCatching {
+        val response = api.getReferenceImages(machineId)
+        if (response.isSuccessful) response.body() ?: emptyList()
+        else throw Exception("Failed to load reference images: ${response.code()}")
+    }
+
     private fun uriToFile(context: Context, uri: Uri, fileName: String): File {
         val file = File(context.cacheDir, fileName)
         context.contentResolver.openInputStream(uri)?.use { input ->

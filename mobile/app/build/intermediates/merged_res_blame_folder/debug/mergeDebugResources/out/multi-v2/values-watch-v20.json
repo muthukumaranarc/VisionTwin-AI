@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.visiontwin.app-mergeDebugResources-63:/values-watch-v20/values-watch-v20.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Muthu\\.gradle\\caches\\9.0.0\\transforms\\8f7161d2aa40463806814a33eaee1517\\transformed\\appcompat-1.6.1\\res\\values-watch-v20\\values-watch-v20.xml",
+                    "from": {
+                        "startLines": "2,5,8",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,214,385",
+                        "endLines": "4,7,10",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "209,380,553"
+                    }
+                }
+            ]
+        }
+    ]
+}

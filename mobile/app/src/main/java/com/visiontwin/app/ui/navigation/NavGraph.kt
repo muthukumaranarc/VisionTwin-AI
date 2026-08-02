@@ -33,7 +33,11 @@ fun NavGraph(
             MachineListScreen(
                 repository = repository,
                 onMachineSelected = { machineId, machineName ->
-                    navController.navigate("upload/$machineId/$machineName")
+                    if (cacheManager.loadAdminToken() != null) {
+                        navController.navigate("admin/ref-images/$machineId/$machineName")
+                    } else {
+                        navController.navigate("upload/$machineId/$machineName")
+                    }
                 },
                 onAdminLogin = {
                     navController.navigate("admin/login")
@@ -142,6 +146,23 @@ fun NavGraph(
             val reportId = backStackEntry.arguments?.getString("reportId") ?: ""
             AdminReportDetailScreen(
                 reportId = reportId,
+                repository = repository,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "admin/ref-images/{machineId}/{machineName}",
+            arguments = listOf(
+                navArgument("machineId") { type = NavType.StringType },
+                navArgument("machineName") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val machineId = backStackEntry.arguments?.getString("machineId") ?: ""
+            val machineName = backStackEntry.arguments?.getString("machineName") ?: ""
+            AdminRefImagesScreen(
+                machineId = machineId,
+                machineName = machineName,
                 repository = repository,
                 onBack = { navController.popBackStack() }
             )

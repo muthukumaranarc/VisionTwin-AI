@@ -31,8 +31,11 @@ public class AIService {
     @Value("${visiontwin.ai.api-url:}")
     private String apiUrl;
 
-    @Value("${visiontwin.ai.model:gemini-1.5-flash}")
-    private String modelName;
+    @Value("${visiontwin.ai.vision-model:google/gemini-flash-1.5-exp}")
+    private String visionModelName;
+
+    @Value("${visiontwin.ai.text-model:meta-llama/llama-3.1-8b-instruct:free}")
+    private String textModelName;
 
     @Value("${visiontwin.ai.embedding-model:text-embedding-004}")
     private String embeddingModelName;
@@ -174,9 +177,9 @@ public class AIService {
     }
 
     private String callGeminiVision(String base64Image, String mimeType, String promptText) throws IOException, InterruptedException {
-        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
+        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + visionModelName + ":generateContent?key=" + apiKey;
         if (!apiUrl.trim().isEmpty()) {
-            endpoint = apiUrl + "/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
+            endpoint = apiUrl + "/v1beta/models/" + visionModelName + ":generateContent?key=" + apiKey;
         }
 
         Map<String, Object> req = Map.of(
@@ -209,9 +212,9 @@ public class AIService {
     }
 
     private String callGeminiText(String promptText) throws IOException, InterruptedException {
-        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
+        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + textModelName + ":generateContent?key=" + apiKey;
         if (!apiUrl.trim().isEmpty()) {
-            endpoint = apiUrl + "/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
+            endpoint = apiUrl + "/v1beta/models/" + textModelName + ":generateContent?key=" + apiKey;
         }
 
         Map<String, Object> req = Map.of(
@@ -240,7 +243,14 @@ public class AIService {
     // --- OPENAI REST CLIENTS ---
 
     private double[] getOpenAIEmbedding(String text) throws IOException, InterruptedException {
-        String endpoint = apiUrl.trim().isEmpty() ? "https://api.openai.com/v1/embeddings" : apiUrl + "/v1/embeddings";
+        String endpoint = "https://api.openai.com/v1/embeddings";
+        if (!apiUrl.trim().isEmpty()) {
+            if (apiUrl.contains("/embeddings")) {
+                endpoint = apiUrl;
+            } else {
+                endpoint = apiUrl.replaceAll("/+$", "") + "/embeddings";
+            }
+        }
 
         Map<String, Object> req = Map.of(
                 "input", text,
@@ -270,10 +280,17 @@ public class AIService {
     }
 
     private String callOpenAIVision(String base64Image, String mimeType, String promptText) throws IOException, InterruptedException {
-        String endpoint = apiUrl.trim().isEmpty() ? "https://api.openai.com/v1/chat/completions" : apiUrl + "/v1/chat/completions";
+        String endpoint = "https://api.openai.com/v1/chat/completions";
+        if (!apiUrl.trim().isEmpty()) {
+            if (apiUrl.contains("/chat/completions")) {
+                endpoint = apiUrl;
+            } else {
+                endpoint = apiUrl.replaceAll("/+$", "") + "/chat/completions";
+            }
+        }
 
         Map<String, Object> req = Map.of(
-                "model", modelName,
+                "model", visionModelName,
                 "messages", List.of(
                         Map.of("role", "user", "content", List.of(
                                 Map.of("type", "text", "text", promptText),
@@ -303,10 +320,17 @@ public class AIService {
     }
 
     private String callOpenAIText(String promptText) throws IOException, InterruptedException {
-        String endpoint = apiUrl.trim().isEmpty() ? "https://api.openai.com/v1/chat/completions" : apiUrl + "/v1/chat/completions";
+        String endpoint = "https://api.openai.com/v1/chat/completions";
+        if (!apiUrl.trim().isEmpty()) {
+            if (apiUrl.contains("/chat/completions")) {
+                endpoint = apiUrl;
+            } else {
+                endpoint = apiUrl.replaceAll("/+$", "") + "/chat/completions";
+            }
+        }
 
         Map<String, Object> req = Map.of(
-                "model", modelName,
+                "model", textModelName,
                 "messages", List.of(
                         Map.of("role", "user", "content", promptText)
                 )
