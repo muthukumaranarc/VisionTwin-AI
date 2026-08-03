@@ -8,22 +8,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.visiontwin.app.data.repository.VisionTwinRepository
+import com.visiontwin.app.ui.components.*
 import com.visiontwin.app.ui.theme.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminAddMachineScreen(
     repository: VisionTwinRepository,
@@ -54,21 +54,8 @@ fun AdminAddMachineScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Add Machine", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryBlue, titleContentColor = White,
-                    navigationIconContentColor = White
-                )
-            )
-        },
-        containerColor = ScreenBackground
+        topBar = { VTTopBar(title = "Add Machine", onBack = onBack) },
+        containerColor = VTBackground
     ) { padding ->
         Column(
             modifier = Modifier
@@ -81,7 +68,7 @@ fun AdminAddMachineScreen(
                 value = name, onValueChange = { name = it },
                 label = { Text("Machine Name") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true, shape = RoundedCornerShape(12.dp),
+                singleLine = true, shape = InputShape,
                 enabled = savedMachineId == null
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -90,7 +77,7 @@ fun AdminAddMachineScreen(
                 value = manufacturer, onValueChange = { manufacturer = it },
                 label = { Text("Manufacturer") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true, shape = RoundedCornerShape(12.dp),
+                singleLine = true, shape = InputShape,
                 enabled = savedMachineId == null
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -99,63 +86,51 @@ fun AdminAddMachineScreen(
                 value = model, onValueChange = { model = it },
                 label = { Text("Model") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true, shape = RoundedCornerShape(12.dp),
+                singleLine = true, shape = InputShape,
                 enabled = savedMachineId == null
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             // File pickers
-            OutlinedButton(
+            FilePickerButton(
+                text = if (thumbnailUri != null) "Thumbnail Selected ✓" else "Select Thumbnail Image",
+                icon = Icons.Filled.Image,
                 onClick = { thumbnailPicker.launch("image/*") },
-                modifier = Modifier.fillMaxWidth().height(48.dp),
-                shape = ButtonShape,
                 enabled = savedMachineId == null
-            ) {
-                Icon(Icons.Default.Image, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(if (thumbnailUri != null) "Thumbnail Selected ✓" else "Select Thumbnail Image")
-            }
+            )
             Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedButton(
-                onClick = { manualPicker.launch("application/pdf") },
-                modifier = Modifier.fillMaxWidth().height(48.dp),
-                shape = ButtonShape,
+            FilePickerButton(
+                text = if (manualUri != null) "Manual Selected ✓" else "Select Manual (.md)",
+                icon = Icons.Filled.PictureAsPdf,
+                onClick = { manualPicker.launch("text/markdown") },
                 enabled = savedMachineId == null
-            ) {
-                Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(if (manualUri != null) "Manual PDF Selected ✓" else "Select Manual PDF")
-            }
+            )
             Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedButton(
-                onClick = { guidePicker.launch("application/pdf") },
-                modifier = Modifier.fillMaxWidth().height(48.dp),
-                shape = ButtonShape,
+            FilePickerButton(
+                text = if (userGuideUri != null) "User Guide Selected ✓" else "Select User Guide (.md)",
+                icon = Icons.Filled.PictureAsPdf,
+                onClick = { guidePicker.launch("text/markdown") },
                 enabled = savedMachineId == null
-            ) {
-                Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(if (userGuideUri != null) "User Guide Selected ✓" else "Select User Guide PDF")
-            }
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             if (message != null) {
                 Text(
                     message!!,
-                    color = if (messageIsError) ErrorRed else SuccessGreen,
+                    color = if (messageIsError) VTError else VTSuccess,
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
             if (savedMachineId == null) {
-                // Save button
-                Button(
+                VTButton(
+                    text = "Save Machine",
                     onClick = {
-                        if (name.isBlank()) { message = "Machine name required"; messageIsError = true; return@Button }
+                        if (name.isBlank()) { message = "Machine name required"; messageIsError = true; return@VTButton }
                         message = null
                         isSaving = true
                         scope.launch {
@@ -172,56 +147,74 @@ fun AdminAddMachineScreen(
                             isSaving = false
                         }
                     },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    shape = ButtonShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
-                    enabled = !isSaving
-                ) {
-                    if (isSaving) {
-                        CircularProgressIndicator(color = White, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
-                    } else {
-                        Text("Save Machine", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
+                    enabled = !isSaving,
+                    loading = isSaving,
+                    icon = Icons.Filled.Build,
+                    modifier = Modifier.fillMaxWidth()
+                )
             } else {
-                // Generate Knowledge button
-                Divider(modifier = Modifier.padding(vertical = 12.dp))
-                Text("Knowledge Base", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = DarkText)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Generate AI knowledge base from uploaded PDFs.", fontSize = 14.sp, color = SecondaryText)
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Button(
-                    onClick = {
-                        isGenerating = true
-                        message = null
-                        scope.launch {
-                            repository.generateKnowledge(savedMachineId!!)
-                                .onSuccess {
-                                    message = it.message ?: "Knowledge base generated!"
-                                    messageIsError = false
+                // Generate Knowledge
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                VTCard {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Knowledge Base", fontWeight = FontWeight.SemiBold, fontSize = 18.sp, color = VTOnSurface)
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            "Generate AI knowledge base from uploaded Markdown files so the diagnostic engine can search machine manuals.",
+                            fontSize = 14.sp,
+                            color = VTOnSurfaceVariant,
+                            lineHeight = 20.sp
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        VTButton(
+                            text = "Generate Knowledge Base",
+                            onClick = {
+                                isGenerating = true
+                                message = null
+                                scope.launch {
+                                    repository.generateKnowledge(savedMachineId!!)
+                                        .onSuccess {
+                                            message = it.message ?: "Knowledge base generated!"
+                                            messageIsError = false
+                                        }
+                                        .onFailure {
+                                            message = it.message ?: "Generation failed"
+                                            messageIsError = true
+                                        }
+                                    isGenerating = false
                                 }
-                                .onFailure {
-                                    message = it.message ?: "Generation failed"
-                                    messageIsError = true
-                                }
-                            isGenerating = false
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    shape = ButtonShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = AccentOrange),
-                    enabled = !isGenerating
-                ) {
-                    if (isGenerating) {
-                        CircularProgressIndicator(color = White, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Generating...", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    } else {
-                        Text("Generate Knowledge Base", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            },
+                            enabled = !isGenerating,
+                            loading = isGenerating,
+                            containerColor = VTPrimaryContainer,
+                            contentColor = VTOnPrimaryContainer,
+                            icon = Icons.Filled.Psychology,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FilePickerButton(
+    text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().height(48.dp),
+        shape = InputShape,
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = VTOnSurfaceVariant),
+        border = androidx.compose.foundation.BorderStroke(1.dp, VTOutlineVariant),
+        enabled = enabled
+    ) {
+        Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text, fontSize = 14.sp)
     }
 }

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background antialiased" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - VisionTwin AI</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#b4c5ff",
+                    "surface-container-high": "#e2e7ff",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#00788c",
+                    "secondary-fixed": "#eaddff",
+                    "tertiary": "#005e6e",
+                    "surface": "#faf8ff",
+                    "on-surface": "#131b2e",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#dae2fd",
+                    "secondary-container": "#8a4cfc",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#c3c6d7",
+                    "on-surface-variant": "#434655",
+                    "on-secondary-fixed-variant": "#5a00c6",
+                    "on-primary-fixed": "#00174b",
+                    "on-tertiary-fixed": "#001f26",
+                    "error-container": "#ffdad6",
+                    "surface-bright": "#faf8ff",
+                    "background": "#faf8ff",
+                    "outline": "#737686",
+                    "surface-tint": "#0053db",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#004e5c",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#283044",
+                    "surface-dim": "#d2d9f4",
+                    "secondary-fixed-dim": "#d2bbff",
+                    "secondary": "#712ae2",
+                    "on-primary-container": "#eeefff",
+                    "on-secondary-container": "#fffbff",
+                    "on-background": "#131b2e",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#25005a",
+                    "surface-container-low": "#f2f3ff",
+                    "surface-container": "#eaedff",
+                    "tertiary-fixed-dim": "#4cd7f6",
+                    "surface-container-highest": "#dae2fd",
+                    "on-tertiary-container": "#d7f6ff",
+                    "primary-container": "#2563eb",
+                    "inverse-on-surface": "#eef0ff",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "primary-fixed": "#dbe1ff",
+                    "primary": "#004ac6",
+                    "tertiary-fixed": "#acedff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin_desktop": "32px",
+                    "stack_md": "16px",
+                    "stack_sm": "8px",
+                    "margin_mobile": "16px",
+                    "sidebar_width": "280px",
+                    "stack_lg": "24px",
+                    "container_max_width": "1440px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "500"}],
+                    "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface border-r border-outline-variant flex flex-col p-4 overflow-y-auto z-20">
+<!-- Header -->
+<div class="flex items-center gap-3 mb-8 px-4 mt-2">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary font-headline-md">VT</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-primary">VisionTwin AI</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Textile Operations</p>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 flex flex-col gap-1">
+<!-- Active: Dashboard -->
+<a class="flex items-center gap-3 px-4 py-2 bg-surface-container-high text-primary border-l-2 border-primary rounded-lg transition-transform duration-150 transform active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span>Machines</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span>AI Diagnosis</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">build</span>
+<span>Maintenance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span>Knowledge Base</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Employees</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">description</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<!-- Footer -->
+<div class="mt-auto flex flex-col gap-1 pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col ml-[280px] min-w-0 h-screen overflow-hidden bg-background">
+<!-- TopNavBar -->
+<header class="bg-surface/80 backdrop-blur-md flex justify-between items-center w-full h-16 px-gutter border-b border-outline-variant z-10 sticky top-0">
+<!-- Left Content (Empty as per JSON layout instruction, search could go here if search_bar was fully defined as component, but focusing on JSON structure) -->
+<div class="flex-1 flex items-center">
+<div class="relative w-96 hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search machines, reports..." type="text"/>
+</div>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-secondary hover:bg-secondary-fixed rounded-full transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-outline-variant overflow-hidden border-2 border-surface cursor-pointer">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A close up, high quality headshot of a factory manager wearing safety glasses, professional lighting, industrial setting in background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyFqm1S_6QCNRQ7z8pIcYeoJ-QAV50hFcbnRAJC5Q3yxZ42czSyfqcEVQOo5lcoxEfQt-BN35MAcQY-5AcOtnfigdsfO8EIt5h52hDAQngjF-TolIpcwrdJiPsJdYLl272Yy06pnX3mmDDrlWGDopVhD9uxK5StAm2S_z9AKvFOO0l8t7qzzm0eYyCmDs126CFMcfBb1rGFMXh4j98iIFF3A2csW9WHsUhyfPNRFIypUbb4ThUlqk"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto p-6 lg:p-8">
+<div class="max-w-[1440px] mx-auto w-full space-y-8">
+<!-- Welcome Section -->
+<section>
+<h2 class="text-display font-display font-bold text-on-background">Good morning, Factory Manager.</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant mt-2">Overall machine health is stable. AI has flagged 3 items requiring your attention.</p>
+</section>
+<!-- KPI Cards Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+<!-- Total -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-sm font-label-sm uppercase text-outline">Total Machines</span>
+<span class="material-symbols-outlined text-outline">precision_manufacturing</span>
+</div>
+<div class="mt-4">
+<span class="text-display font-display">42</span>
+</div>
+</div>
+<!-- Running -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-sm font-label-sm uppercase text-outline">Running</span>
+<span class="material-symbols-outlined text-tertiary">check_circle</span>
+</div>
+<div class="mt-4 flex items-end justify-between">
+<span class="text-display font-display">38</span>
+<div class="flex items-center text-tertiary text-label-md font-label-md bg-tertiary-container/20 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> +2%
+                            </div>
+</div>
+</div>
+<!-- Stopped -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-sm font-label-sm uppercase text-outline">Stopped</span>
+<span class="material-symbols-outlined text-error">cancel</span>
+</div>
+<div class="mt-4 flex items-end justify-between">
+<span class="text-display font-display">4</span>
+<div class="flex items-center text-error text-label-md font-label-md bg-error-container/50 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[16px] mr-1">trending_down</span> -1
+                            </div>
+</div>
+</div>
+<!-- Maintenance -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-label-sm font-label-sm uppercase text-outline">Maint. Due</span>
+<span class="material-symbols-outlined text-tertiary">build</span>
+</div>
+<div class="mt-4">
+<span class="text-display font-display">12</span>
+</div>
+</div>
+<!-- AI Diagnoses -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between relative overflow-hidden ai-glow">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex justify-between items-start pl-2">
+<span class="text-label-sm font-label-sm uppercase text-secondary font-bold">AI Diagnoses Today</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div class="mt-4 pl-2">
+<span class="text-display font-display text-secondary">15</span>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Left Column (Wider) -->
+<div class="xl:col-span-2 space-y-8">
+<!-- Machine Status Bento -->
+<section>
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-headline-md font-headline-md text-on-surface">Critical Assets</h3>
+<button class="text-primary text-label-md font-label-md hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 hover:shadow-lg transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-headline-md font-headline-md">Loom #102</h4>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mt-1">Weaving Dept</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-tertiary flex items-center justify-center text-tertiary font-bold text-label-md">
+                                            98%
+                                        </div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-4">
+<div>
+<p class="text-label-sm text-outline">Temp</p>
+<p class="text-body-md font-medium">45°C</p>
+</div>
+<div>
+<p class="text-label-sm text-outline">Vibration</p>
+<p class="text-body-md font-medium">1.2 mm/s</p>
+</div>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary w-[98%] h-full"></div>
+</div>
+</div>
+<!-- Card 2 (Warning) -->
+<div class="bg-surface-container-lowest border border-error-container rounded-xl p-5 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-error"></div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-headline-md font-headline-md">Spinner #04</h4>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mt-1">Spinning Dept</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-error flex items-center justify-center text-error font-bold text-label-md">
+                                            72%
+                                        </div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-4">
+<div>
+<p class="text-label-sm text-outline">Temp</p>
+<p class="text-body-md font-medium text-error">85°C <span class="material-symbols-outlined text-[14px] align-middle">warning</span></p>
+</div>
+<div>
+<p class="text-label-sm text-outline">Vibration</p>
+<p class="text-body-md font-medium">3.8 mm/s</p>
+</div>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-error w-[72%] h-full"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent AI Diagnoses Table -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-5 border-b border-outline-variant flex justify-between items-center bg-surface">
+<h3 class="text-headline-md font-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">psychology</span>
+                                    Recent AI Diagnoses
+                                </h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="p-4 text-label-sm font-label-sm text-outline uppercase tracking-wider">Machine</th>
+<th class="p-4 text-label-sm font-label-sm text-outline uppercase tracking-wider">Problem Detected</th>
+<th class="p-4 text-label-sm font-label-sm text-outline uppercase tracking-wider">Confidence</th>
+<th class="p-4 text-label-sm font-label-sm text-outline uppercase tracking-wider">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-4 font-medium text-body-md">Spinner #04</td>
+<td class="p-4 text-body-md text-on-surface-variant">Bearing Wear (Stage 2)</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<span class="text-body-md font-medium text-secondary">98%</span>
+<div class="w-16 h-1.5 bg-secondary-fixed rounded-full overflow-hidden"><div class="bg-secondary w-[98%] h-full"></div></div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-md text-label-sm font-medium bg-error-container text-on-error-container border border-error/20">Action Req</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-4 font-medium text-body-md">Loom #88</td>
+<td class="p-4 text-body-md text-on-surface-variant">Tension Inconsistency</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<span class="text-body-md font-medium text-secondary">85%</span>
+<div class="w-16 h-1.5 bg-secondary-fixed rounded-full overflow-hidden"><div class="bg-secondary w-[85%] h-full"></div></div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-md text-label-sm font-medium bg-surface-container-high text-on-surface border border-outline-variant">Reviewing</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-4 font-medium text-body-md">Dyer #02</td>
+<td class="p-4 text-body-md text-on-surface-variant">Thermal Drift</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<span class="text-body-md font-medium text-secondary">92%</span>
+<div class="w-16 h-1.5 bg-secondary-fixed rounded-full overflow-hidden"><div class="bg-secondary w-[92%] h-full"></div></div>
+</div>
+</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-1 rounded-md text-label-sm font-medium bg-surface-container-high text-on-surface border border-outline-variant">Scheduled</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Right Column (Sidebar/Timeline) -->
+<div class="xl:col-span-1 space-y-6">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5">
+<h3 class="text-headline-md font-headline-md mb-6">Maintenance Timeline</h3>
+<div class="relative pl-6 border-l-2 border-outline-variant space-y-8">
+<!-- Item 1 -->
+<div class="relative">
+<div class="absolute -left-[31px] w-4 h-4 rounded-full bg-error border-4 border-surface-container-lowest"></div>
+<p class="text-label-sm font-label-sm text-error uppercase mb-1">Today, 14:00</p>
+<h4 class="text-body-md font-medium">Replace Bearing (Spinner #04)</h4>
+<p class="text-body-sm text-on-surface-variant mt-1">High priority AI flag. Technician dispatched.</p>
+</div>
+<!-- Item 2 -->
+<div class="relative">
+<div class="absolute -left-[31px] w-4 h-4 rounded-full bg-outline-variant border-4 border-surface-container-lowest"></div>
+<p class="text-label-sm font-label-sm text-outline uppercase mb-1">Tomorrow, 08:00</p>
+<h4 class="text-body-md font-medium">Routine Calibration (Loom #102)</h4>
+<p class="text-body-sm text-on-surface-variant mt-1">Scheduled monthly check.</p>
+</div>
+<!-- Item 3 -->
+<div class="relative">
+<div class="absolute -left-[31px] w-4 h-4 rounded-full bg-outline-variant border-4 border-surface-container-lowest"></div>
+<p class="text-label-sm font-label-sm text-outline uppercase mb-1">Thursday, 10:30</p>
+<h4 class="text-body-md font-medium">Software Update (Dyer #02)</h4>
+<p class="text-body-sm text-on-surface-variant mt-1">Firmware patch v2.4 deployment.</p>
+</div>
+</div>
+<button class="w-full mt-8 py-2 border border-outline-variant rounded-lg text-body-md font-medium hover:bg-surface-container-low transition-colors">View Full Schedule</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

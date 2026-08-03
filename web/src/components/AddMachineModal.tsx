@@ -52,13 +52,13 @@ export default function AddMachineModal({ isOpen, onClose, onSuccess }: AddMachi
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-900/50 p-4 sm:p-0">
-      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-xl sm:my-8">
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-          <h3 className="text-lg font-semibold text-gray-900">Add New Machine</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-[#131b2e]/45 p-4 backdrop-blur-sm sm:p-0">
+      <div className="vt-panel relative w-full max-w-md sm:my-8">
+        <div className="flex items-center justify-between border-b border-[#c3c6d7]/80 px-6 py-4">
+          <h3 className="text-lg font-semibold text-[#131b2e]">Add New Machine</h3>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 transition-colors"
+            className="rounded-lg p-1 text-[#737686] transition-colors hover:bg-[#f2f3ff] hover:text-[#131b2e]"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -68,88 +68,88 @@ export default function AddMachineModal({ isOpen, onClose, onSuccess }: AddMachi
         <form onSubmit={handleSubmit} className="px-6 py-4">
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="mb-1 block text-sm font-medium text-gray-700">Name</label>
+              <label htmlFor="name" className="mb-1 block text-sm font-semibold text-[#434655]">Name</label>
               <input
                 type="text"
                 id="name"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="vt-input"
                 placeholder="e.g. CNC Milling Machine"
               />
             </div>
             <div>
-              <label htmlFor="manufacturer" className="mb-1 block text-sm font-medium text-gray-700">Manufacturer</label>
+              <label htmlFor="manufacturer" className="mb-1 block text-sm font-semibold text-[#434655]">Manufacturer</label>
               <input
                 type="text"
                 id="manufacturer"
                 required
                 value={manufacturer}
                 onChange={(e) => setManufacturer(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="vt-input"
                 placeholder="e.g. Haas"
               />
             </div>
             <div>
-              <label htmlFor="model" className="mb-1 block text-sm font-medium text-gray-700">Model</label>
+              <label htmlFor="model" className="mb-1 block text-sm font-semibold text-[#434655]">Model</label>
               <input
                 type="text"
                 id="model"
                 required
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="vt-input"
                 placeholder="e.g. VF-2"
               />
             </div>
             <div>
-              <label htmlFor="thumbnail" className="mb-1 block text-sm font-medium text-gray-700">Thumbnail Image (Optional)</label>
+              <label htmlFor="thumbnail" className="mb-1 block text-sm font-semibold text-[#434655]">Thumbnail Image (Optional)</label>
               <input
                 type="file"
                 id="thumbnail"
                 accept="image/*"
                 onChange={(e) => setThumbnail(e.target.files?.[0] || null)}
-                className="w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+                className="w-full text-sm text-[#434655] file:mr-4 file:rounded-lg file:border-0 file:bg-[#e2e7ff] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#004ac6] hover:file:bg-[#dae2fd]"
               />
             </div>
             <div>
-              <label htmlFor="manual" className="mb-1 block text-sm font-medium text-gray-700">Manual PDF (Optional)</label>
+              <label htmlFor="manual" className="mb-1 block text-sm font-semibold text-[#434655]">Manual (Optional)</label>
               <input
                 type="file"
                 id="manual"
-                accept="application/pdf"
+                accept=".pdf,.md,.markdown,.txt"
                 onChange={(e) => setManual(e.target.files?.[0] || null)}
-                className="w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+                className="w-full text-sm text-[#434655] file:mr-4 file:rounded-lg file:border-0 file:bg-[#e2e7ff] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#004ac6] hover:file:bg-[#dae2fd]"
               />
             </div>
             <div>
-              <label htmlFor="userGuide" className="mb-1 block text-sm font-medium text-gray-700">User Guide PDF (Optional)</label>
+              <label htmlFor="userGuide" className="mb-1 block text-sm font-semibold text-[#434655]">User Guide (Optional)</label>
               <input
                 type="file"
                 id="userGuide"
-                accept="application/pdf"
+                accept=".pdf,.md,.markdown,.txt"
                 onChange={(e) => setUserGuide(e.target.files?.[0] || null)}
-                className="w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+                className="w-full text-sm text-[#434655] file:mr-4 file:rounded-lg file:border-0 file:bg-[#e2e7ff] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#004ac6] hover:file:bg-[#dae2fd]"
               />
             </div>
           </div>
 
-          {error && <div className="mt-4 text-sm text-red-600">{error}</div>}
+          {error && <div className="mt-4 rounded-lg bg-[#ffdad6] p-3 text-sm font-medium text-[#93000a]">{error}</div>}
 
           <div className="mt-6 flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-50"
+              className="vt-button-secondary"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
+              className="vt-button-primary"
             >
               {loading ? 'Creating...' : 'Create Machine'}
             </button>

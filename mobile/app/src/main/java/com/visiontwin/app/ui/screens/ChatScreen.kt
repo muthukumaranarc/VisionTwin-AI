@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,10 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.visiontwin.app.data.model.ChatMessageDto
 import com.visiontwin.app.data.repository.VisionTwinRepository
+import com.visiontwin.app.ui.components.VTTopBar
 import com.visiontwin.app.ui.theme.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     reportId: String,
@@ -41,7 +40,6 @@ fun ChatScreen(
         repository.getChatHistory(reportId).onSuccess { messages = it }
     }
 
-    // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
@@ -49,21 +47,8 @@ fun ChatScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("AI Assistant", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryBlue, titleContentColor = White,
-                    navigationIconContentColor = White
-                )
-            )
-        },
-        containerColor = ScreenBackground
+        topBar = { VTTopBar(title = "AI Assistant", onBack = onBack) },
+        containerColor = VTBackground
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             // Chat messages
@@ -84,8 +69,8 @@ fun ChatScreen(
             // Input bar
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shadowElevation = 8.dp,
-                color = White
+                color = VTSurface,
+                shadowElevation = 8.dp
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -97,6 +82,12 @@ fun ChatScreen(
                         placeholder = { Text("Ask a question...") },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(24.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = VTPrimary,
+                            unfocusedBorderColor = VTOutlineVariant,
+                            focusedContainerColor = ColorWhite,
+                            unfocusedContainerColor = ColorWhite
+                        ),
                         maxLines = 3,
                         enabled = !isSending
                     )
@@ -106,7 +97,6 @@ fun ChatScreen(
                             if (inputText.isBlank() || isSending) return@IconButton
                             val userMsg = inputText.trim()
                             inputText = ""
-                            // Add user message locally immediately
                             messages = messages + ChatMessageDto(
                                 id = "local_${System.currentTimeMillis()}",
                                 sender = "USER",
@@ -131,15 +121,17 @@ fun ChatScreen(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(CircleShape)
-                            .background(PrimaryBlue)
+                            .background(VTPrimary)
                     ) {
-                        Icon(Icons.Default.Send, contentDescription = "Send", tint = White)
+                        Icon(Icons.Default.Send, contentDescription = "Send", tint = VTOnPrimary)
                     }
                 }
             }
         }
     }
 }
+
+private val ColorWhite = androidx.compose.ui.graphics.Color.White
 
 @Composable
 fun ChatBubble(message: ChatMessageDto) {
@@ -154,13 +146,13 @@ fun ChatBubble(message: ChatMessageDto) {
                 bottomStart = if (isUser) 16.dp else 4.dp,
                 bottomEnd = if (isUser) 4.dp else 16.dp
             ),
-            color = if (isUser) PrimaryBlue else LightGray,
+            color = if (isUser) VTPrimary else VTSurfaceContainer,
             modifier = Modifier.widthIn(max = 300.dp)
         ) {
             Text(
                 text = message.messageText,
                 modifier = Modifier.padding(12.dp),
-                color = if (isUser) White else DarkText,
+                color = if (isUser) VTOnPrimary else VTOnSurface,
                 fontSize = 15.sp,
                 lineHeight = 20.sp
             )
@@ -178,7 +170,7 @@ fun TypingIndicator() {
     Row(horizontalArrangement = Arrangement.Start) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = LightGray,
+            color = VTSurfaceContainer
         ) {
             Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 listOf(dot1, dot2, dot3).forEach { alpha ->
@@ -186,7 +178,7 @@ fun TypingIndicator() {
                         modifier = Modifier
                             .size(8.dp)
                             .clip(CircleShape)
-                            .background(MediumGray.copy(alpha = 0.4f + alpha * 0.6f))
+                            .background(VTOutline.copy(alpha = 0.4f + alpha * 0.6f))
                     )
                 }
             }

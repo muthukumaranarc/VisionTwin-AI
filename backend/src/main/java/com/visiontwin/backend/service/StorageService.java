@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +13,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class StorageService {
 
     @Value("${visiontwin.storage.upload-dir}")
@@ -61,6 +63,20 @@ public class StorageService {
     public Path loadFile(String filename, String folderType) {
         String dir = getDirectoryByFolderType(folderType);
         return Paths.get(dir).resolve(filename);
+    }
+
+    /**
+     * Deletes a stored file. The stored path looks like "/folderType/filename".
+     */
+    public void deleteFile(String storedPath, String folderType) {
+        if (storedPath == null || storedPath.isBlank()) return;
+        String filename = storedPath.substring(storedPath.lastIndexOf("/") + 1);
+        try {
+            Path target = Paths.get(getDirectoryByFolderType(folderType)).resolve(filename);
+            Files.deleteIfExists(target);
+        } catch (IOException e) {
+            log.warn("Failed to delete file {} in {}", storedPath, folderType, e);
+        }
     }
 
     private String getDirectoryByFolderType(String folderType) {

@@ -8,7 +8,6 @@ import com.visiontwin.backend.repository.DiagnosisReportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +20,6 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final AIService aiService;
 
-    @Transactional
     public ChatMessage sendMessage(UUID reportId, String userMessageText) {
         log.info("Sending chat message for report: {}", reportId);
         DiagnosisReport report = reportRepository.findById(reportId)
@@ -29,7 +27,7 @@ public class ChatService {
 
         // 1. Save User Message
         ChatMessage userMessage = ChatMessage.builder()
-                .report(report)
+                .reportId(report.getId())
                 .sender("USER")
                 .messageText(userMessageText)
                 .build();
@@ -78,7 +76,7 @@ public class ChatService {
 
         // 5. Save and Return AI Message
         ChatMessage aiMessage = ChatMessage.builder()
-                .report(report)
+                .reportId(report.getId())
                 .sender("AI")
                 .messageText(aiResponseText)
                 .build();

@@ -4,7 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -12,41 +12,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.visiontwin.app.ui.theme.PrimaryBlue
-import com.visiontwin.app.ui.theme.PrimaryBlueDark
+import com.visiontwin.app.ui.theme.VTPrimary
+import com.visiontwin.app.ui.theme.VTPrimaryContainer
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(onNavigateToMachines: () -> Unit) {
+fun SplashScreen(onNavigateToDashboard: () -> Unit) {
     val fadeAnim = remember { Animatable(0f) }
-    val scaleAnim = remember { Animatable(0.5f) }
+    val scaleAnim = remember { Animatable(0.6f) }
 
     LaunchedEffect(Unit) {
-        fadeAnim.animateTo(1f, animationSpec = tween(1000, easing = EaseOutCubic))
+        fadeAnim.animateTo(1f, animationSpec = tween(800, easing = EaseOutCubic))
     }
     LaunchedEffect(Unit) {
-        scaleAnim.animateTo(1f, animationSpec = tween(1200, easing = EaseOutBack))
+        scaleAnim.animateTo(1f, animationSpec = tween(900, easing = EaseOutBack))
     }
     LaunchedEffect(Unit) {
-        delay(2500)
-        onNavigateToMachines()
+        delay(2000)
+        onNavigateToDashboard()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.linearGradient(
-                    colors = listOf(PrimaryBlue, PrimaryBlueDark),
-                    start = Offset(0f, 0f),
-                    end = Offset(0f, Float.POSITIVE_INFINITY)
+                Brush.verticalGradient(
+                    colors = listOf(Color.White, Color(0xFFF2F3FF))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -55,28 +53,37 @@ fun SplashScreen(onNavigateToMachines: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.alpha(fadeAnim.value)
         ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Logo",
-                tint = Color.White,
+            Box(
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(88.dp)
                     .scale(scaleAnim.value)
-            )
-            Spacer(modifier = Modifier.height(24.dp))
+                    .background(VTPrimaryContainer, androidx.compose.foundation.shape.RoundedCornerShape(24.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Psychology,
+                    contentDescription = "Logo",
+                    tint = Color.White,
+                    modifier = Modifier.size(44.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(28.dp))
             Text(
                 text = "VisionTwin AI",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = (-0.5).sp,
+                color = VTPrimary,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Smart Manufacturing Assistant",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.White.copy(alpha = 0.85f),
+                text = "INTELLIGENCE IN YOUR POCKET",
+                fontSize = 11.sp,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 2.sp,
+                color = Color(0xFF424656),
                 textAlign = TextAlign.Center
             )
         }

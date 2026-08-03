@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,9 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.visiontwin.app.data.model.DiagnosisReportDto
 import com.visiontwin.app.data.repository.VisionTwinRepository
+import com.visiontwin.app.ui.components.*
 import com.visiontwin.app.ui.theme.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminReportsScreen(
     repository: VisionTwinRepository,
@@ -34,65 +34,60 @@ fun AdminReportsScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Reports", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryBlue, titleContentColor = White,
-                    navigationIconContentColor = White
-                )
-            )
-        },
-        containerColor = ScreenBackground
+        topBar = { VTTopBar(title = "Diagnosis Reports", onBack = onBack) },
+        containerColor = VTBackground
     ) { padding ->
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryBlue)
+        when {
+            isLoading -> {
+                Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = VTPrimary)
+                }
             }
-        } else if (reports.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Text("No reports yet", color = SecondaryText, fontSize = 16.sp)
+            reports.isEmpty() -> {
+                Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+                    VTEmptyState(
+                        text = "No reports yet",
+                        subtitle = "Diagnosis reports will appear here once generated."
+                    )
+                }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(reports) { report ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = CardShape,
-                        colors = CardDefaults.cardColors(containerColor = CardBackground),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                        onClick = { onReportClick(report.id) }
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                report.machineName,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                color = PrimaryBlue
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                report.problemDescription,
-                                fontSize = 14.sp,
-                                color = DarkText,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                report.timestamp?.take(16) ?: "",
-                                fontSize = 12.sp,
-                                color = MediumGray
-                            )
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(padding),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(reports) { report ->
+                        VTCard(onClick = { onReportClick(report.id) }) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        report.machineName,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 16.sp,
+                                        color = VTOnSurface
+                                    )
+                                    VTLabelChip(text = "REPORT")
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    report.problemDescription.ifBlank { report.diagnosisProblem },
+                                    fontSize = 14.sp,
+                                    color = VTOnSurfaceVariant,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    report.timestamp?.take(16) ?: "",
+                                    fontSize = 12.sp,
+                                    color = VTOutline
+                                )
+                            }
                         }
                     }
                 }

@@ -40,10 +40,21 @@ public class AIService {
     @Value("${visiontwin.ai.embedding-model:text-embedding-004}")
     private String embeddingModelName;
 
+    @Value("${visiontwin.ai.available-models:gemini-3.6-flash,gemini-2.5-pro,gemini-2.5-flash,gemini-2.0-flash}")
+    private List<String> availableModels;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(60))
             .build();
+
+    public String getDefaultModel() {
+        return visionModelName;
+    }
+
+    public List<String> getAvailableModels() {
+        return availableModels;
+    }
 
     /**
      * Generate text embeddings for the given text.
@@ -71,6 +82,10 @@ public class AIService {
      * - partName, description, x, y, radius
      */
     public String analyzeImage(Path imagePath, String problemDescription) {
+        return analyzeImage(imagePath, problemDescription, null);
+    }
+
+    public String analyzeImage(Path imagePath, String problemDescription, String modelOverride) {
         if ("mock".equalsIgnoreCase(provider) || apiKey.trim().isEmpty()) {
             return getMockAnalysis(problemDescription);
         }
@@ -98,7 +113,7 @@ public class AIService {
             if ("openai".equalsIgnoreCase(provider)) {
                 return callOpenAIVision(base64Image, mimeType, prompt);
             } else {
-                return callGeminiVision(base64Image, mimeType, prompt);
+                return callGeminiVision(base64Image, mimeType, prompt, modelOverride);
             }
         } catch (Exception e) {
             log.error("Error analyzing image via AI, falling back to mock", e);
@@ -110,6 +125,10 @@ public class AIService {
      * Perform the final reasoning combining vision analysis, retrieved knowledge context, and conversation history.
      */
     public String performReasoning(String visionAnalysisJson, String retrievedContext, String conversationHistoryJson) {
+        return performReasoning(visionAnalysisJson, retrievedContext, conversationHistoryJson, null);
+    }
+
+    public String performReasoning(String visionAnalysisJson, String retrievedContext, String conversationHistoryJson, String modelOverride) {
         if ("mock".equalsIgnoreCase(provider) || apiKey.trim().isEmpty()) {
             return getMockReasoning(visionAnalysisJson, retrievedContext);
         }
@@ -134,12 +153,35 @@ public class AIService {
             if ("openai".equalsIgnoreCase(provider)) {
                 return callOpenAIText(prompt);
             } else {
-                return callGeminiText(prompt);
+                return callGeminiText(prompt, modelOverride);
             }
         } catch (Exception e) {
             log.error("Error performing reasoning via AI, falling back to mock", e);
             return getMockReasoning(visionAnalysisJson, retrievedContext);
         }
+    }
+
+    public String generateText(String promptText) {
+        if ("mock".equalsIgnoreCase(provider) || apiKey.trim().isEmpty()) {
+            return "";
+        }
+        try {
+            if ("openai".equalsIgnoreCase(provider)) {
+                return callOpenAIText(promptText);
+            } else {
+                return callGeminiText(promptText, null);
+            }
+        } catch (Exception e) {
+            log.error("Error generating text via AI provider", e);
+            return "";
+        }
+    }
+
+    private String resolveModel(String override, String fallback) {
+        if (override != null && !override.isBlank() && availableModels.contains(override)) {
+            return override;
+        }
+        return fallback;
     }
 
     // --- GEMINI REST CLIENTS ---
@@ -176,10 +218,11 @@ public class AIService {
         return result;
     }
 
-    private String callGeminiVision(String base64Image, String mimeType, String promptText) throws IOException, InterruptedException {
-        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + visionModelName + ":generateContent?key=" + apiKey;
+    private String callGeminiVision(String base64Image, String mimeType, String promptText, String modelOverride) throws IOException, InterruptedException {
+        String modelName = resolveModel(modelOverride, visionModelName);
+        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
         if (!apiUrl.trim().isEmpty()) {
-            endpoint = apiUrl + "/v1beta/models/" + visionModelName + ":generateContent?key=" + apiKey;
+            endpoint = apiUrl + "/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
         }
 
         Map<String, Object> req = Map.of(
@@ -211,10 +254,11 @@ public class AIService {
         return cleanJsonString(text);
     }
 
-    private String callGeminiText(String promptText) throws IOException, InterruptedException {
-        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + textModelName + ":generateContent?key=" + apiKey;
+    private String callGeminiText(String promptText, String modelOverride) throws IOException, InterruptedException {
+        String modelName = resolveModel(modelOverride, textModelName);
+        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
         if (!apiUrl.trim().isEmpty()) {
-            endpoint = apiUrl + "/v1beta/models/" + textModelName + ":generateContent?key=" + apiKey;
+            endpoint = apiUrl + "/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
         }
 
         Map<String, Object> req = Map.of(

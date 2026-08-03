@@ -75,3 +75,8 @@ data class HealthResponse(
     val service: String = "",
     val timestamp: Long = 0L
 )
+
+data class DiagnosisModelsResponse(
+    val default: String = "",
+    val models: List<String> = emptyList()
+)

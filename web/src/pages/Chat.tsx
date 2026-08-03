@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getChatHistory, sendChatMessage, getReportDetails } from '../api/api';
+import { getChatHistory, sendChatMessage, getReportDetails, safeUUID } from '../api/api';
 import type { ChatMessage, DiagnosisReport } from '../api/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -42,7 +42,7 @@ export default function Chat() {
     if (!input.trim() || !reportId || sending) return;
 
     const userMsg: ChatMessage = {
-      id: crypto.randomUUID(),
+      id: safeUUID(),
       sender: 'USER',
       messageText: input.trim(),
       timestamp: new Date().toISOString(),

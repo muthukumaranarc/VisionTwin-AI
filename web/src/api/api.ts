@@ -7,14 +7,16 @@ const api = axios.create({
   },
 });
 
-// Attach admin token if available
-api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('admin_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+export const safeUUID = (): string => {
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+    return window.crypto.randomUUID();
   }
-  return config;
-});
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,6 +67,15 @@ export interface ChatMessage {
   reportId?: string;
 }
 
+export interface LearnMessage {
+  id: string;
+  machineId: string;
+  sessionId: string;
+  sender: 'USER' | 'AI';
+  messageText: string;
+  timestamp: string;
+}
+
 export interface KnowledgeBaseLayer1 {
   id: string;
   machineId: string;
@@ -104,16 +115,32 @@ export const addReferenceImage = (machineId: string, formData: FormData) =>
 export const getReferenceImages = (machineId: string) =>
   api.get<ReferenceImage[]>(`/machines/${machineId}/ref-images`);
 
-export const getFileUrl = (folderType: string, filename: string) =>
-  `/api/machines/files/${folderType}/${filename}`;
+export const updateReferenceImage = (refImageId: string, formData: FormData) =>
+  api.put<ReferenceImage>(`/machines/ref-images/${refImageId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+export const deleteReferenceImage = (refImageId: string) =>
+  api.delete(`/machines/ref-images/${refImageId}`);
+
+// Backend stores full relative paths like "/thumbnails/uuid.jpg" or "/uploads/uuid.jpg".
+export const getFileUrl = (path?: string | null) => {
+  if (!path) return '';
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `/api/machines/files${cleanPath}`;
+};
 
 // ─── Analysis ──────────────────────────────────────────────────────────────────
 
-export const diagnose = (machineId: string, problemDescription: string, image: File) => {
+export const getDiagnosisModels = () =>
+  api.get<{ default: string; models: string[] }>('/analysis/models');
+
+export const diagnose = (machineId: string, problemDescription: string, image: File, model?: string) => {
   const formData = new FormData();
   formData.append('machineId', machineId);
   formData.append('problemDescription', problemDescription);
   formData.append('image', image);
+  if (model) formData.append('model', model);
   return api.post<DiagnosisReport>('/analysis/diagnose', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 120000, // 2 min for AI processing
@@ -133,13 +160,19 @@ export const sendChatMessage = (reportId: string, message: string) =>
 export const getChatHistory = (reportId: string) =>
   api.get<ChatMessage[]>(`/chat/${reportId}/history`);
 
-// ─── Admin ─────────────────────────────────────────────────────────────────────
+// ─── Learn ─────────────────────────────────────────────────────────────────────
 
-export const adminLogin = (username: string, password: string) =>
-  api.post<{ success: boolean; token?: string; message?: string }>('/admin/login', {
-    username,
-    password,
-  });
+export const sendLearnMessage = (machineId: string, message: string, sessionId: string) =>
+  api.post<LearnMessage>(`/learn/${machineId}`, { message }, { params: { sessionId } });
+
+export const getLearnHistory = (machineId: string, sessionId: string) =>
+  api.get<LearnMessage[]>(`/learn/${machineId}/history`, { params: { sessionId } });
+
+export const clearLearnHistory = (machineId: string, sessionId: string) =>
+  api.delete(`/learn/${machineId}`, { params: { sessionId } });
+
+
+// ─── Admin ─────────────────────────────────────────────────────────────────────
 
 export const getDashboardStats = () =>
   api.get<DashboardStats>('/admin/dashboard');

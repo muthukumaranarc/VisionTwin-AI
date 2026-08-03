@@ -1,24 +1,21 @@
 package com.visiontwin.backend.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.UUID;
 
-@Entity
-@Table(name = "knowledge_base_layer1")
+@Document(collection = "knowledge_base_layer1")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class KnowledgeBaseLayer1 {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
 
-    @Column(name = "machine_id", nullable = false, unique = true)
     private UUID machineId;
 
-    @Lob
-    @Column(nullable = false, length = 1000000)
     private String contentJson;
 }

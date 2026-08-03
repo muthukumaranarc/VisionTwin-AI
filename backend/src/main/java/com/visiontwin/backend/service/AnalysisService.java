@@ -33,6 +33,10 @@ public class AnalysisService {
      * Executes the retrieval pipeline and returns the final diagnosis report.
      */
     public DiagnosisReport analyze(UUID machineId, MultipartFile imageFile, String problemDescription) throws Exception {
+        return analyze(machineId, imageFile, problemDescription, null);
+    }
+
+    public DiagnosisReport analyze(UUID machineId, MultipartFile imageFile, String problemDescription, String modelOverride) throws Exception {
         log.info("Starting diagnosis analysis for machine: {}", machineId);
         
         Machine machine = machineRepository.findById(machineId)
@@ -43,7 +47,7 @@ public class AnalysisService {
         Path imagePath = storageService.loadFile(imagePathStr.substring(imagePathStr.lastIndexOf("/") + 1), "uploads");
 
         // 2. Call Vision AI
-        String visionJson = aiService.analyzeImage(imagePath, problemDescription);
+        String visionJson = aiService.analyzeImage(imagePath, problemDescription, modelOverride);
         log.info("Vision AI output: {}", visionJson);
 
         String partName = "";
@@ -93,7 +97,7 @@ public class AnalysisService {
         }
 
         // 5. Run Reasoning Engine
-        String reasoningJson = aiService.performReasoning(visionJson, retrievedContext.toString(), "[]");
+        String reasoningJson = aiService.performReasoning(visionJson, retrievedContext.toString(), "[]", modelOverride);
         log.info("Reasoning AI output: {}", reasoningJson);
 
         String problem = "Unknown Machine Issue";

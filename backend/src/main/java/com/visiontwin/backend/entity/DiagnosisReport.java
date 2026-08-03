@@ -1,39 +1,34 @@
 package com.visiontwin.backend.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "diagnosis_reports")
+@Document(collection = "diagnosis_reports")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DiagnosisReport {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
 
-    @Column(nullable = false)
     private UUID machineId;
 
-    @Column(nullable = false)
     private String machineName;
 
-    @Column(nullable = false)
     private String problemDescription;
 
-    @Column(nullable = false)
     private String uploadedImagePath;
 
-    @Column(nullable = false)
     private String diagnosisProblem;
 
-    @Column(nullable = false, length = 2000)
     private String diagnosisSolution;
 
     private Float highlightX;
@@ -42,13 +37,8 @@ public class DiagnosisReport {
 
     private LocalDateTime timestamp;
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Transient
     @Builder.Default
     @ToString.Exclude
     private List<ChatMessage> chatHistory = new ArrayList<>();
-
-    @PrePersist
-    protected void onCreate() {
-        timestamp = LocalDateTime.now();
-    }
 }

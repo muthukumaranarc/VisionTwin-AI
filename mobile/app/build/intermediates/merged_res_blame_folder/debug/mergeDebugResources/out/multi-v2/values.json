@@ -57,6 +57,25 @@
                     }
                 },
                 {
+                    "source": "C:\\Users\\Muthu\\Documents\\Git\\VisionTwin-AI\\mobile\\app\\src\\main\\res\\values\\themes.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "57",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "372"
+                    },
+                    "to": {
+                        "startLines": "6570",
+                        "startColumns": "4",
+                        "startOffsets": "462920",
+                        "endLines": "6574",
+                        "endColumns": "12",
+                        "endOffsets": "463231"
+                    }
+                },
+                {
                     "source": "C:\\Users\\Muthu\\.gradle\\caches\\9.0.0\\transforms\\2f00c033c6c54f5e5172f01a7ad3edc2\\transformed\\navigation-common-2.8.5\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2,15,21,27,30",
@@ -128,25 +147,6 @@
                         "endLines": "121,124,972,10763",
                         "endColumns": "55,47,51,24",
                         "endOffsets": "6200,6356,59115,711061"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Muthu\\Documents\\Git\\VisionTwin AI\\mobile\\app\\src\\main\\res\\values\\themes.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "6",
-                        "endColumns": "12",
-                        "endOffsets": "366"
-                    },
-                    "to": {
-                        "startLines": "6570",
-                        "startColumns": "4",
-                        "startOffsets": "462920",
-                        "endLines": "6574",
-                        "endColumns": "12",
-                        "endOffsets": "463231"
                     }
                 },
                 {

@@ -1,6 +1,8 @@
 package com.visiontwin.backend.controller;
 
+import com.visiontwin.backend.entity.ChatMessage;
 import com.visiontwin.backend.entity.DiagnosisReport;
+import com.visiontwin.backend.repository.ChatMessageRepository;
 import com.visiontwin.backend.repository.DiagnosisReportRepository;
 import com.visiontwin.backend.repository.KnowledgeBaseLayer1Repository;
 import com.visiontwin.backend.repository.KnowledgeBaseLayer2Repository;
@@ -24,6 +26,7 @@ public class AdminController {
     private final DiagnosisReportRepository reportRepository;
     private final KnowledgeBaseLayer1Repository layer1Repository;
     private final KnowledgeBaseLayer2Repository layer2Repository;
+    private final ChatMessageRepository chatMessageRepository;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request) {
@@ -51,14 +54,29 @@ public class AdminController {
 
     @GetMapping("/reports")
     public ResponseEntity<List<DiagnosisReport>> getAllReports() {
-        return ResponseEntity.ok(reportRepository.findAllByOrderByTimestampDesc());
+        List<DiagnosisReport> reports = reportRepository.findAllByOrderByTimestampDesc();
+        reports.forEach(this::populateChatHistory);
+        return ResponseEntity.ok(reports);
     }
 
     @GetMapping("/reports/{id}")
     public ResponseEntity<DiagnosisReport> getReportDetails(@PathVariable UUID id) {
         return reportRepository.findById(id)
-                .map(ResponseEntity::ok)
+                .map(report -> {
+                    populateChatHistory(report);
+                    return ResponseEntity.ok(report);
+                })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    private void populateChatHistory(DiagnosisReport report) {
+        List<ChatMessage> history = chatMessageRepository.findByReportIdOrderByTimestampAsc(report.getId());
+        if (report.getChatHistory() == null) {
+            report.setChatHistory(history);
+        } else {
+            report.getChatHistory().clear();
+            report.getChatHistory().addAll(history);
+        }
     }
 
     @Data

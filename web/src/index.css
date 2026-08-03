@@ -1,5 +1,91 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-vt-background: #faf8ff;
+  --color-vt-surface: #ffffff;
+  --color-vt-surface-low: #f2f3ff;
+  --color-vt-surface-high: #e2e7ff;
+  --color-vt-ink: #131b2e;
+  --color-vt-muted: #434655;
+  --color-vt-line: #c3c6d7;
+  --color-vt-primary: #2563eb;
+  --color-vt-primary-dark: #004ac6;
+  --color-vt-ai: #7c3aed;
+  --color-vt-teal: #00788c;
+  --color-vt-danger: #ba1a1a;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background: var(--color-vt-background);
+    color: var(--color-vt-ink);
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background:
+      linear-gradient(135deg, rgba(226, 231, 255, 0.55), rgba(250, 248, 255, 0) 34rem),
+      var(--color-vt-background);
+  }
+
+  * {
+    letter-spacing: 0;
+  }
+}
+
+@layer components {
+  .vt-page {
+    @apply mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8;
+  }
+
+  .vt-card {
+    @apply rounded-lg border border-[#c3c6d7]/80 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  }
+
+  .vt-panel {
+    @apply rounded-xl border border-[#c3c6d7]/80 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.06)];
+  }
+
+  .vt-label {
+    @apply text-[11px] font-semibold uppercase leading-4 text-[#737686];
+  }
+
+  .vt-title {
+    @apply text-2xl font-bold leading-8 text-[#131b2e] sm:text-3xl;
+  }
+
+  .vt-subtitle {
+    @apply mt-1 text-sm leading-6 text-[#434655];
+  }
+
+  .vt-input {
+    @apply min-h-11 w-full rounded-lg border border-[#c3c6d7] bg-white px-4 py-2.5 text-sm text-[#131b2e] shadow-sm transition-all placeholder:text-[#737686] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#2563eb]/15;
+  }
+
+  .vt-button-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#2563eb] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#004ac6] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .vt-button-ai {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#7c3aed] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#6d28d9] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .vt-button-secondary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[#c3c6d7] bg-white px-4 py-2 text-sm font-semibold text-[#434655] shadow-sm transition hover:bg-[#f2f3ff] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .vt-empty {
+    @apply rounded-xl border border-dashed border-[#c3c6d7] bg-white/70 p-10 text-center;
+  }
+
+  .vt-ai-card {
+    @apply rounded-lg border border-[#c3c6d7]/80 border-l-[#7c3aed] border-l-4 bg-white shadow-[inset_0_1px_0_rgba(124,58,237,0.12),0_1px_2px_rgba(15,23,42,0.04)];
+  }
+}
+
 /* Custom animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }

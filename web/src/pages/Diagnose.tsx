@@ -1,7 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getMachines, diagnose } from '../api/api';
+import { getMachines, diagnose, getDiagnosisModels } from '../api/api';
 import type { Machine } from '../api/api';
+
+const FALLBACK_MODELS = ['gemini-3.6-flash', 'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+const MODEL_STORAGE_KEY = 'visiontwin-diagnose-model';
 
 export default function Diagnose() {
   const navigate = useNavigate();
@@ -13,18 +16,30 @@ export default function Diagnose() {
   const [problemDesc, setProblemDesc] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [models, setModels] = useState<string[]>(FALLBACK_MODELS);
+  const [selectedModel, setSelectedModel] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const dropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getMachines().then((res) => setMachines(res.data)).catch(() => {});
+    getDiagnosisModels()
+      .then((res) => {
+        setModels(res.data.models.length ? res.data.models : FALLBACK_MODELS);
+        setSelectedModel((prev) => prev || localStorage.getItem(MODEL_STORAGE_KEY) || res.data.default || FALLBACK_MODELS[0]);
+      })
+      .catch(() => setSelectedModel((prev) => prev || localStorage.getItem(MODEL_STORAGE_KEY) || FALLBACK_MODELS[0]));
   }, []);
 
   useEffect(() => {
     if (preselectedMachineId) setMachineId(preselectedMachineId);
   }, [preselectedMachineId]);
+
+  const handleModelChange = (value: string) => {
+    setSelectedModel(value);
+    localStorage.setItem(MODEL_STORAGE_KEY, value);
+  };
 
   const handleImageSelect = (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -53,7 +68,7 @@ export default function Diagnose() {
     setLoading(true);
     setError(null);
     try {
-      const res = await diagnose(machineId, problemDesc.trim(), image);
+      const res = await diagnose(machineId, problemDesc.trim(), image, selectedModel);
       navigate(`/diagnosis/${res.data.id}`, { state: { report: res.data } });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Diagnosis failed. Please try again.';
@@ -64,23 +79,24 @@ export default function Diagnose() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="animate-fade-in mb-8 text-center">
-        <h1 className="text-2xl font-bold text-gray-900">Machine Diagnosis</h1>
-        <p className="mt-2 text-gray-500">
-          Upload an image of the issue and describe the problem. Our AI will analyze it and provide a diagnosis.
+    <div className="mx-auto w-full max-w-2xl px-4 py-12 sm:px-6">
+      <header className="mb-10">
+        <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Diagnose a machine</h1>
+        <p className="mt-1.5 text-sm leading-6 text-neutral-500">
+          Describe the issue and attach a photo. The AI will identify the problem and suggest a fix.
         </p>
-      </div>
+      </header>
 
-      <form onSubmit={handleSubmit} className="animate-fade-in space-y-6">
-        {/* Machine selection */}
+      <form onSubmit={handleSubmit} className="space-y-8">
         <div>
-          <label htmlFor="machine" className="mb-1.5 block text-sm font-medium text-gray-700">Machine</label>
+          <label htmlFor="machine" className="mb-1.5 block text-sm font-medium text-neutral-700">
+            Machine
+          </label>
           <select
             id="machine"
             value={machineId}
             onChange={(e) => setMachineId(e.target.value)}
-            className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-none outline-none transition focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900"
             required
           >
             <option value="">Select a machine...</option>
@@ -90,30 +106,50 @@ export default function Diagnose() {
           </select>
         </div>
 
-        {/* Problem description */}
         <div>
-          <label htmlFor="problem" className="mb-1.5 block text-sm font-medium text-gray-700">Problem Description</label>
+          <label htmlFor="aiModel" className="mb-1.5 block text-sm font-medium text-neutral-700">
+            AI model
+          </label>
+          <select
+            id="aiModel"
+            value={selectedModel}
+            onChange={(e) => handleModelChange(e.target.value)}
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-none outline-none transition focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900"
+            required
+          >
+            {models.length === 0 && <option value="">Loading...</option>}
+            {models.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+          <p className="mt-1.5 text-xs text-neutral-500">
+            Gemini model used for vision analysis and reasoning. Uses the backend's configured Gemini key.
+          </p>
+        </div>
+
+        <div>
+          <label htmlFor="problem" className="mb-1.5 block text-sm font-medium text-neutral-700">
+            Problem
+          </label>
           <textarea
             id="problem"
             rows={4}
             value={problemDesc}
             onChange={(e) => setProblemDesc(e.target.value)}
-            placeholder="Describe the issue you're experiencing with the machine..."
-            className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all resize-y"
+            placeholder="What's wrong with the machine?"
+            className="w-full resize-y rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-none outline-none transition placeholder:text-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900"
             required
           />
         </div>
 
-        {/* Image upload */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">Upload Image</label>
+          <label className="mb-1.5 block text-sm font-medium text-neutral-700">Photo</label>
           <div
-            ref={dropRef}
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
             onClick={() => fileInputRef.current?.click()}
-            className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all hover:border-indigo-400 hover:bg-indigo-50/50 ${
-              imagePreview ? 'border-indigo-400 bg-indigo-50/30' : 'border-gray-300 bg-gray-50'
+            className={`cursor-pointer rounded-lg border border-dashed p-8 text-center transition-colors ${
+              imagePreview ? 'border-neutral-400' : 'border-neutral-300 hover:border-neutral-400'
             }`}
           >
             <input
@@ -125,47 +161,26 @@ export default function Diagnose() {
             />
             {imagePreview ? (
               <div className="space-y-3">
-                <img src={imagePreview} alt="Preview" className="mx-auto max-h-64 rounded-lg object-contain shadow-sm" />
-                <p className="text-sm text-gray-500">Click or drop to replace image</p>
+                <img src={imagePreview} alt="Preview" className="mx-auto max-h-72 rounded-lg object-contain" />
+                <p className="text-xs text-neutral-400">Click to replace</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                </svg>
-                <p className="text-sm text-gray-500">
-                  <span className="font-medium text-indigo-600">Click to upload</span> or drag and drop
-                </p>
-                <p className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
-              </div>
+              <p className="text-sm text-neutral-500">
+                <span className="font-medium text-neutral-900 underline underline-offset-4">Click to upload</span> or drag
+                an image here
+              </p>
             )}
           </div>
         </div>
 
-        {error && (
-          <div className="animate-fade-in rounded-lg bg-red-50 p-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
+        {error && <p className="text-sm font-medium text-red-600">{error}</p>}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:from-indigo-700 hover:to-purple-700 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-neutral-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? (
-            <span className="inline-flex items-center gap-2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              Analyzing with AI...
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-2">
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-              </svg>
-              Start Diagnosis
-            </span>
-          )}
+          {loading ? 'Analyzing...' : 'Start diagnosis'}
         </button>
       </form>
     </div>

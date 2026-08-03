@@ -81,6 +81,35 @@ public class MachineController {
         return ResponseEntity.ok(machineService.getReferenceImages(id));
     }
 
+    @PutMapping(value = "/ref-images/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ReferenceImage> updateReferenceImage(
+            @PathVariable UUID id,
+            @RequestParam("partName") String partName,
+            @RequestParam("circleX") float circleX,
+            @RequestParam("circleY") float circleY,
+            @RequestParam("circleRadius") float circleRadius,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+        try {
+            ReferenceImage updated = machineService.updateReferenceImage(id, image, partName, circleX, circleY, circleRadius);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Failed to update reference image: " + id, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/ref-images/{id}")
+    public ResponseEntity<Void> deleteReferenceImage(@PathVariable UUID id) {
+        try {
+            machineService.deleteReferenceImage(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     /**
      * File server endpoint to read uploaded media and documents.
      */

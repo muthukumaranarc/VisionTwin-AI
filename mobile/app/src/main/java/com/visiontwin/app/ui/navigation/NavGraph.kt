@@ -6,7 +6,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.visiontwin.app.data.cache.CacheManager
 import com.visiontwin.app.data.repository.VisionTwinRepository
 import com.visiontwin.app.ui.screens.*
 import com.visiontwin.app.ui.screens.admin.*
@@ -14,37 +13,106 @@ import com.visiontwin.app.ui.screens.admin.*
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    repository: VisionTwinRepository,
-    cacheManager: CacheManager
+    repository: VisionTwinRepository
 ) {
     NavHost(navController = navController, startDestination = "splash") {
 
         composable("splash") {
             SplashScreen(
-                onNavigateToMachines = {
-                    navController.navigate("machines") {
+                onNavigateToDashboard = {
+                    navController.navigate("dashboard") {
                         popUpTo("splash") { inclusive = true }
                     }
                 }
             )
         }
 
+        // ─── Main tabs (with bottom navigation) ───────────────────────────────
+        composable("dashboard") {
+            DashboardScreen(
+                repository = repository,
+                onTabSelected = { tab ->
+                    navController.navigate(tab.route) {
+                        popUpTo("dashboard") { inclusive = true }
+                    }
+                },
+                onReportClick = { reportId ->
+                    navController.navigate("result/$reportId")
+                },
+                onDiagnose = {
+                    navController.navigate("diagnose") {
+                        popUpTo("dashboard") { inclusive = true }
+                    }
+                },
+                onAddMachine = { navController.navigate("admin/add-machine") },
+                onReports = { navController.navigate("admin/reports") }
+            )
+        }
+
         composable("machines") {
             MachineListScreen(
                 repository = repository,
-                onMachineSelected = { machineId, machineName ->
-                    if (cacheManager.loadAdminToken() != null) {
-                        navController.navigate("admin/ref-images/$machineId/$machineName")
-                    } else {
-                        navController.navigate("upload/$machineId/$machineName")
+                onTabSelected = { tab ->
+                    navController.navigate(tab.route) {
+                        popUpTo("machines") { inclusive = true }
                     }
                 },
-                onAdminLogin = {
-                    navController.navigate("admin/login")
+                onMachineSelected = { machineId ->
+                    navController.navigate("machine/$machineId")
+                },
+                onMachineLongSelected = { machineId, machineName ->
+                    navController.navigate("admin/ref-images/$machineId/$machineName")
                 }
             )
         }
 
+        composable("diagnose") {
+            DiagnoseScreen(
+                repository = repository,
+                onTabSelected = { tab ->
+                    navController.navigate(tab.route) {
+                        popUpTo("diagnose") { inclusive = true }
+                    }
+                },
+                onResult = { reportId ->
+                    navController.navigate("result/$reportId")
+                }
+            )
+        }
+
+        composable("profile") {
+            ProfileScreen(
+                repository = repository,
+                onTabSelected = { tab ->
+                    navController.navigate(tab.route) {
+                        popUpTo("profile") { inclusive = true }
+                    }
+                },
+                onAddMachine = { navController.navigate("admin/add-machine") },
+                onReports = { navController.navigate("admin/reports") }
+            )
+        }
+
+        // ─── Machine detail ───────────────────────────────────────────────────
+        composable(
+            route = "machine/{machineId}",
+            arguments = listOf(navArgument("machineId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val machineId = backStackEntry.arguments?.getString("machineId") ?: ""
+            MachineDetailScreen(
+                machineId = machineId,
+                repository = repository,
+                onBack = { navController.popBackStack() },
+                onDiagnose = { machineIdArg, machineName ->
+                    navController.navigate("upload/$machineIdArg/$machineName")
+                },
+                onManageRefImages = { machineIdArg, machineName ->
+                    navController.navigate("admin/ref-images/$machineIdArg/$machineName")
+                }
+            )
+        }
+
+        // ─── Diagnosis flow ───────────────────────────────────────────────────
         composable(
             route = "upload/{machineId}/{machineName}",
             arguments = listOf(
@@ -54,7 +122,7 @@ fun NavGraph(
         ) { backStackEntry ->
             val machineId = backStackEntry.arguments?.getString("machineId") ?: ""
             val machineName = backStackEntry.arguments?.getString("machineName") ?: ""
-            ImageUploadScreen(
+            UploadDiagnoseScreen(
                 machineId = machineId,
                 machineName = machineName,
                 repository = repository,
@@ -90,40 +158,7 @@ fun NavGraph(
             )
         }
 
-        // Admin routes
-        composable("admin/login") {
-            AdminLoginScreen(
-                repository = repository,
-                onBack = { navController.popBackStack() },
-                onLoginSuccess = {
-                    navController.navigate("admin/dashboard") {
-                        popUpTo("admin/login") { inclusive = true }
-                    }
-                }
-            )
-        }
-
-        composable("admin/dashboard") {
-            AdminDashboardScreen(
-                repository = repository,
-                onLogout = {
-                    cacheManager.clearAdminToken()
-                    navController.navigate("machines") {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
-                onMachines = {
-                    navController.navigate("machines")
-                },
-                onAddMachine = {
-                    navController.navigate("admin/add-machine")
-                },
-                onReports = {
-                    navController.navigate("admin/reports")
-                }
-            )
-        }
-
+        // ─── Admin routes ─────────────────────────────────────────────────────
         composable("admin/add-machine") {
             AdminAddMachineScreen(
                 repository = repository,

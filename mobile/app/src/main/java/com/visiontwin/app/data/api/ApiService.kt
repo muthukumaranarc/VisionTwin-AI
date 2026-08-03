@@ -46,8 +46,27 @@ interface ApiService {
     suspend fun diagnose(
         @Part("machineId") machineId: RequestBody,
         @Part("problemDescription") problemDescription: RequestBody,
-        @Part image: MultipartBody.Part
+        @Part image: MultipartBody.Part,
+        @Part("model") model: RequestBody?
     ): Response<DiagnosisReportDto>
+
+    @GET("api/analysis/models")
+    suspend fun getDiagnosisModels(): Response<DiagnosisModelsResponse>
+
+    // Reference image edit/delete
+    @Multipart
+    @PUT("api/machines/ref-images/{id}")
+    suspend fun updateReferenceImage(
+        @Path("id") id: String,
+        @Part("partName") partName: RequestBody,
+        @Part("circleX") circleX: RequestBody,
+        @Part("circleY") circleY: RequestBody,
+        @Part("circleRadius") circleRadius: RequestBody,
+        @Part image: MultipartBody.Part?
+    ): Response<ReferenceImageDto>
+
+    @DELETE("api/machines/ref-images/{id}")
+    suspend fun deleteReferenceImage(@Path("id") id: String): Response<Unit>
 
     // Chat APIs
     @POST("api/chat/{reportId}")

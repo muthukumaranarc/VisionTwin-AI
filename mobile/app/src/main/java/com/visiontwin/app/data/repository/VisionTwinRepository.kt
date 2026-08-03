@@ -28,8 +28,18 @@ class VisionTwinRepository(
         }
     }.recoverCatching { cache.loadMachines().ifEmpty { throw it } }
 
+    suspend fun getDiagnosisModels(): Result<DiagnosisModelsResponse> = runCatching {
+        val response = api.getDiagnosisModels()
+        if (response.isSuccessful) {
+            response.body() ?: DiagnosisModelsResponse()
+        } else {
+            DiagnosisModelsResponse()
+        }
+    }
+
     suspend fun diagnose(
-        context: Context, machineId: String, problemDescription: String, imageUri: Uri
+        context: Context, machineId: String, problemDescription: String,
+        imageUri: Uri, model: String? = null
     ): Result<DiagnosisReportDto> = runCatching {
         val imageFile = uriToFile(context, imageUri, "upload_image.jpg")
         val imagePart = MultipartBody.Part.createFormData(
@@ -38,8 +48,10 @@ class VisionTwinRepository(
         )
         val machineIdBody = machineId.toRequestBody("text/plain".toMediaTypeOrNull())
         val descBody = problemDescription.toRequestBody("text/plain".toMediaTypeOrNull())
+        val modelBody = model?.takeIf { it.isNotBlank() }
+            ?.toRequestBody("text/plain".toMediaTypeOrNull())
 
-        val response = api.diagnose(machineIdBody, descBody, imagePart)
+        val response = api.diagnose(machineIdBody, descBody, imagePart, modelBody)
         if (response.isSuccessful) {
             val report = response.body() ?: throw Exception("Empty response from server")
             cache.saveLastReport(report)
@@ -106,12 +118,12 @@ class VisionTwinRepository(
             MultipartBody.Part.createFormData("thumbnail", file.name, file.asRequestBody("image/*".toMediaTypeOrNull()))
         }
         val manualPart = manualUri?.let {
-            val file = uriToFile(context, it, "manual.pdf")
-            MultipartBody.Part.createFormData("manual", file.name, file.asRequestBody("application/pdf".toMediaTypeOrNull()))
+            val file = uriToFile(context, it, "manual.md")
+            MultipartBody.Part.createFormData("manual", file.name, file.asRequestBody("text/markdown".toMediaTypeOrNull()))
         }
         val guidePart = userGuideUri?.let {
-            val file = uriToFile(context, it, "userguide.pdf")
-            MultipartBody.Part.createFormData("userGuide", file.name, file.asRequestBody("application/pdf".toMediaTypeOrNull()))
+            val file = uriToFile(context, it, "userguide.md")
+            MultipartBody.Part.createFormData("userGuide", file.name, file.asRequestBody("text/markdown".toMediaTypeOrNull()))
         }
 
         val response = api.createMachine(namePart, mfgPart, modelPart, thumbPart, manualPart, guidePart)
@@ -149,6 +161,32 @@ class VisionTwinRepository(
         val response = api.getReferenceImages(machineId)
         if (response.isSuccessful) response.body() ?: emptyList()
         else throw Exception("Failed to load reference images: ${response.code()}")
+    }
+
+    suspend fun updateReferenceImage(
+        context: Context, refImageId: String, partName: String,
+        circleX: Float, circleY: Float, circleRadius: Float, imageUri: Uri?
+    ): Result<ReferenceImageDto> = runCatching {
+        val imagePart = imageUri?.let {
+            val file = uriToFile(context, it, "ref_${System.currentTimeMillis()}.jpg")
+            MultipartBody.Part.createFormData("image", file.name, file.asRequestBody("image/*".toMediaTypeOrNull()))
+        }
+        val response = api.updateReferenceImage(
+            refImageId,
+            partName.toRequestBody("text/plain".toMediaTypeOrNull()),
+            circleX.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+            circleY.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+            circleRadius.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+            imagePart
+        )
+        if (response.isSuccessful) response.body() ?: throw Exception("Empty response")
+        else throw Exception("Update reference image failed: ${response.code()}")
+    }
+
+    suspend fun deleteReferenceImage(refImageId: String): Result<Unit> = runCatching {
+        val response = api.deleteReferenceImage(refImageId)
+        if (response.isSuccessful) Unit
+        else throw Exception("Delete failed: ${response.code()}")
     }
 
     private fun uriToFile(context: Context, uri: Uri, fileName: String): File {

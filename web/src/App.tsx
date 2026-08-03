@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Machines from './pages/Machines';
@@ -6,9 +6,9 @@ import MachineDetail from './pages/MachineDetail';
 import Diagnose from './pages/Diagnose';
 import DiagnosisResult from './pages/DiagnosisResult';
 import Chat from './pages/Chat';
-import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminReports from './pages/AdminReports';
+import Learn from './pages/Learn';
 
 export default function App() {
   return (
@@ -21,7 +21,8 @@ export default function App() {
           <Route path="/diagnose" element={<Diagnose />} />
           <Route path="/diagnosis/:id" element={<DiagnosisResult />} />
           <Route path="/chat/:reportId" element={<Chat />} />
-          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/learn" element={<Learn />} />
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/reports" element={<AdminReports />} />
         </Route>

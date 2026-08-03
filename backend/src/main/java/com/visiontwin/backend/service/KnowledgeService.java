@@ -8,13 +8,13 @@ import com.visiontwin.backend.entity.ReferenceImage;
 import com.visiontwin.backend.repository.KnowledgeBaseLayer1Repository;
 import com.visiontwin.backend.repository.KnowledgeBaseLayer2Repository;
 import com.visiontwin.backend.repository.MachineRepository;
+import com.visiontwin.backend.repository.ReferenceImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +29,7 @@ public class KnowledgeService {
     private final MachineRepository machineRepository;
     private final KnowledgeBaseLayer1Repository layer1Repository;
     private final KnowledgeBaseLayer2Repository layer2Repository;
+    private final ReferenceImageRepository referenceImageRepository;
     private final AIService aiService;
     private final StorageService storageService;
 
@@ -40,7 +41,6 @@ public class KnowledgeService {
     @Value("${visiontwin.storage.userguide-dir}")
     private String userguideDir;
 
-    @Transactional
     public void generateKnowledgeBase(UUID machineId) throws Exception {
         log.info("Starting knowledge base generation for machine: {}", machineId);
         Machine machine = machineRepository.findById(machineId)
@@ -50,22 +50,22 @@ public class KnowledgeService {
         layer1Repository.deleteByMachineId(machineId);
         layer2Repository.deleteByMachineId(machineId);
 
-        // 2. Read PDFs
+        // 2. Read documents (PDF or Markdown)
         String manualText = "";
         if (machine.getManualPdfPath() != null) {
             Path manualPath = Paths.get(manualDir).resolve(machine.getManualPdfPath().substring(machine.getManualPdfPath().lastIndexOf("/") + 1));
-            manualText = extractTextFromPdf(manualPath);
+            manualText = extractTextFromFile(manualPath);
         }
 
         String userGuideText = "";
         if (machine.getUserGuidePdfPath() != null) {
             Path guidePath = Paths.get(userguideDir).resolve(machine.getUserGuidePdfPath().substring(machine.getUserGuidePdfPath().lastIndexOf("/") + 1));
-            userGuideText = extractTextFromPdf(guidePath);
+            userGuideText = extractTextFromFile(guidePath);
         }
 
         // Gather reference images names
         List<String> partNames = new ArrayList<>();
-        for (ReferenceImage img : machine.getReferenceImages()) {
+        for (ReferenceImage img : referenceImageRepository.findByMachineId(machineId)) {
             partNames.add(img.getPartName());
         }
 
@@ -114,7 +114,7 @@ public class KnowledgeService {
         }
 
         // Embed reference images part names and functions as well
-        for (ReferenceImage ref : machine.getReferenceImages()) {
+        for (ReferenceImage ref : referenceImageRepository.findByMachineId(machineId)) {
             String refText = String.format("Part Name: %s. This is an official reference image block representing the machine part: %s, circled on the loom assembly map.", ref.getPartName(), ref.getPartName());
             double[] embed = aiService.getEmbedding(refText);
             KnowledgeBaseLayer2 layer2 = KnowledgeBaseLayer2.builder()
@@ -129,10 +129,19 @@ public class KnowledgeService {
         log.info("Knowledge base generation completed successfully for machine: {}", machineId);
     }
 
-    private String extractTextFromPdf(Path path) {
+    private String extractTextFromFile(Path path) {
         if (path == null || !Files.exists(path)) {
-            log.warn("PDF file not found: {}", path);
+            log.warn("File not found: {}", path);
             return "";
+        }
+        String fileName = path.getFileName().toString().toLowerCase();
+        if (fileName.endsWith(".md") || fileName.endsWith(".markdown") || fileName.endsWith(".txt")) {
+            try {
+                return Files.readString(path);
+            } catch (IOException e) {
+                log.error("Failed to read text file: " + path, e);
+                return "";
+            }
         }
         try (PDDocument document = PDDocument.load(path.toFile())) {
             PDFTextStripper stripper = new PDFTextStripper();

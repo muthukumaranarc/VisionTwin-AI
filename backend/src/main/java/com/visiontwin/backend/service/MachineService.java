@@ -7,7 +7,6 @@ import com.visiontwin.backend.repository.ReferenceImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
@@ -23,15 +22,26 @@ public class MachineService {
     private final StorageService storageService;
 
     public List<Machine> getAllMachines() {
-        return machineRepository.findAll();
+        List<Machine> machines = machineRepository.findAll();
+        machines.forEach(this::populateReferenceImages);
+        return machines;
     }
 
     public Machine getMachineById(UUID id) {
-        return machineRepository.findById(id)
+        Machine machine = machineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Machine not found: " + id));
+        populateReferenceImages(machine);
+        return machine;
     }
 
-    @Transactional
+    private void populateReferenceImages(Machine machine) {
+        if (machine.getReferenceImages() == null) {
+            machine.setReferenceImages(new java.util.ArrayList<>());
+        }
+        machine.getReferenceImages().clear();
+        machine.getReferenceImages().addAll(referenceImageRepository.findByMachineId(machine.getId()));
+    }
+
     public Machine createMachine(String name, String manufacturer, String model,
                                  MultipartFile thumbnail, MultipartFile manualPdf,
                                  MultipartFile userGuidePdf) throws IOException {
@@ -64,7 +74,6 @@ public class MachineService {
         return machineRepository.save(machine);
     }
 
-    @Transactional
     public ReferenceImage addReferenceImage(UUID machineId, MultipartFile file, String partName,
                                             float x, float y, float radius) throws IOException {
         log.info("Adding reference image for machine {} with part name: {}", machineId, partName);
@@ -77,7 +86,7 @@ public class MachineService {
         }
 
         ReferenceImage refImage = ReferenceImage.builder()
-                .machine(machine)
+                .machineId(machine.getId())
                 .filename(filename)
                 .partName(partName)
                 .circleX(x)
@@ -91,5 +100,36 @@ public class MachineService {
 
     public List<ReferenceImage> getReferenceImages(UUID machineId) {
         return referenceImageRepository.findByMachineId(machineId);
+    }
+
+    public void deleteReferenceImage(UUID refImageId) {
+        ReferenceImage refImage = referenceImageRepository.findById(refImageId)
+                .orElseThrow(() -> new IllegalArgumentException("Reference image not found: " + refImageId));
+        storageService.deleteFile(refImage.getFilePath(), "refimages");
+        referenceImageRepository.delete(refImage);
+    }
+
+    public ReferenceImage updateReferenceImage(UUID refImageId, MultipartFile file, String partName,
+                                               float x, float y, float radius) throws IOException {
+        ReferenceImage refImage = referenceImageRepository.findById(refImageId)
+                .orElseThrow(() -> new IllegalArgumentException("Reference image not found: " + refImageId));
+
+        if (file != null && !file.isEmpty()) {
+            storageService.deleteFile(refImage.getFilePath(), "refimages");
+            refImage.setFilePath(storageService.storeFile(file, "refimages"));
+            String filename = file.getOriginalFilename();
+            if (filename != null && !filename.isBlank()) {
+                refImage.setFilename(filename);
+            }
+        }
+
+        if (partName != null && !partName.isBlank()) {
+            refImage.setPartName(partName);
+        }
+        refImage.setCircleX(x);
+        refImage.setCircleY(y);
+        refImage.setCircleRadius(radius);
+
+        return referenceImageRepository.save(refImage);
     }
 }
