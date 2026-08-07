@@ -98,4 +98,24 @@ interface ApiService {
     // Health
     @GET("api/health")
     suspend fun healthCheck(): Response<HealthResponse>
+
+    // Learn APIs
+    @POST("api/learn/{machineId}")
+    suspend fun sendLearnMessage(
+        @Path("machineId") machineId: String,
+        @Query("sessionId") sessionId: String,
+        @Body request: LearnMessageRequest
+    ): Response<LearnMessageDto>
+
+    @GET("api/learn/{machineId}/history")
+    suspend fun getLearnHistory(
+        @Path("machineId") machineId: String,
+        @Query("sessionId") sessionId: String
+    ): Response<List<LearnMessageDto>>
+
+    @DELETE("api/learn/{machineId}")
+    suspend fun clearLearnHistory(
+        @Path("machineId") machineId: String,
+        @Query("sessionId") sessionId: String
+    ): Response<Unit>
 }

@@ -6,14 +6,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PrecisionManufacturing
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Psychology
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,9 +29,10 @@ import com.visiontwin.app.ui.theme.*
 
 enum class VTTab(val label: String, val icon: ImageVector, val filledIcon: ImageVector, val route: String) {
     Dashboard("Dashboard", Icons.Filled.Dashboard, Icons.Filled.Dashboard, "dashboard"),
-    Machines("Machines", Icons.Filled.PrecisionManufacturing, Icons.Filled.PrecisionManufacturing, "machines"),
-    Diagnose("AI Diagnosis", Icons.Filled.Psychology, Icons.Filled.Psychology, "diagnose"),
-    Profile("Profile", Icons.Filled.Person, Icons.Filled.Person, "profile"),
+    Announcement("Broadcasts", Icons.Filled.Notifications, Icons.Filled.Notifications, "announcements"),
+    Diagnose("AI Diagnose", Icons.Filled.Psychology, Icons.Filled.Psychology, "diagnose"),
+    Learn("AI Learn", Icons.Filled.Book, Icons.Filled.Book, "learn"),
+    CallExperts("Experts", Icons.Filled.People, Icons.Filled.People, "call-experts"),
 }
 
 /**
@@ -44,6 +48,16 @@ fun VTTopBar(
 ) {
     val backAction = onBack
     val showBack = backAction != null
+    var isProfileOpen by remember { mutableStateOf(false) }
+    var isSettingsOpen by remember { mutableStateOf(false) }
+
+    if (isProfileOpen) {
+        ProfileDialog(onDismiss = { isProfileOpen = false })
+    }
+    if (isSettingsOpen) {
+        SettingsDialog(onDismiss = { isSettingsOpen = false })
+    }
+
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -65,7 +79,37 @@ fun VTTopBar(
                 }
             }
         },
-        actions = actions,
+        actions = {
+            if (onBack == null) {
+                // Settings button
+                IconButton(onClick = { isSettingsOpen = true }) {
+                    Icon(
+                        Icons.Filled.Settings,
+                        contentDescription = "Settings",
+                        tint = VTPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                // Profile avatar button
+                IconButton(onClick = { isProfileOpen = true }) {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(VTPrimaryContainer, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "NY",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = VTOnPrimaryContainer
+                        )
+                    }
+                }
+            } else {
+                actions()
+            }
+        },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = VTSurface,
             titleContentColor = VTPrimary,
@@ -87,7 +131,7 @@ fun VTBottomNav(selected: VTTab, onSelect: (VTTab) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(72.dp)
-                .padding(horizontal = 8.dp, vertical = 8.dp),
+                .padding(horizontal = 4.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -105,16 +149,33 @@ fun VTBottomNav(selected: VTTab, onSelect: (VTTab) -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        imageVector = if (isActive) tab.filledIcon else tab.icon,
-                        contentDescription = tab.label,
-                        tint = if (isActive) VTOnPrimaryContainer else VTOnSurfaceVariant,
-                        modifier = Modifier.size(22.dp)
-                    )
+                    Box(contentAlignment = Alignment.TopEnd) {
+                        Icon(
+                            imageVector = if (isActive) tab.filledIcon else tab.icon,
+                            contentDescription = tab.label,
+                            tint = if (isActive) VTOnPrimaryContainer else VTOnSurfaceVariant,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        if (tab == VTTab.Diagnose || tab == VTTab.Learn) {
+                            Box(
+                                modifier = Modifier
+                                    .offset(x = 10.dp, y = (-4).dp)
+                                    .background(VTError, RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 4.dp, vertical = 1.dp)
+                            ) {
+                                Text(
+                                    "AI",
+                                    fontSize = 7.sp,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = tab.label,
-                        fontSize = 11.sp,
+                        fontSize = 10.sp,
                         fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
                         color = if (isActive) VTOnPrimaryContainer else VTOnSurfaceVariant
                     )

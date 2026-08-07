@@ -23,7 +23,7 @@ public class LearnController {
             @RequestParam String sessionId,
             @RequestBody LearnRequest request) {
         try {
-            LearnMessage response = learnService.sendLearnMessage(machineId, sessionId, request.getMessage());
+            LearnMessage response = learnService.sendLearnMessage(machineId, sessionId, request.getMessage(), request.getModel());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -57,5 +57,6 @@ public class LearnController {
     @Data
     public static class LearnRequest {
         private String message;
+        private String model;
     }
 }

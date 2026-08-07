@@ -130,6 +130,16 @@ export const getFileUrl = (path?: string | null) => {
   return `/api/machines/files${cleanPath}`;
 };
 
+// Fetches the raw text content of a stored document (e.g. a .md manual/guide).
+export const fetchFileContent = async (path: string): Promise<string> => {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const res = await api.get<string>(`/machines/files${cleanPath}`, { responseType: 'text' });
+  return res.data;
+};
+
+export const isMarkdownPath = (path?: string | null): boolean =>
+  !!path && /\.(md|markdown|txt)$/i.test(path);
+
 // ─── Analysis ──────────────────────────────────────────────────────────────────
 
 export const getDiagnosisModels = () =>
@@ -162,8 +172,8 @@ export const getChatHistory = (reportId: string) =>
 
 // ─── Learn ─────────────────────────────────────────────────────────────────────
 
-export const sendLearnMessage = (machineId: string, message: string, sessionId: string) =>
-  api.post<LearnMessage>(`/learn/${machineId}`, { message }, { params: { sessionId } });
+export const sendLearnMessage = (machineId: string, message: string, sessionId: string, model?: string) =>
+  api.post<LearnMessage>(`/learn/${machineId}`, { message, model }, { params: { sessionId } });
 
 export const getLearnHistory = (machineId: string, sessionId: string) =>
   api.get<LearnMessage[]>(`/learn/${machineId}/history`, { params: { sessionId } });

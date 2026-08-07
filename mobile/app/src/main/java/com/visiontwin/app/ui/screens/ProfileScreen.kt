@@ -42,7 +42,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = { VTTopBar(title = "Profile") },
         containerColor = VTBackground,
-        bottomBar = { VTBottomNav(selected = VTTab.Profile, onSelect = onTabSelected) }
+        bottomBar = { VTBottomNav(selected = VTTab.Dashboard, onSelect = onTabSelected) }
     ) { padding ->
         Column(
             modifier = Modifier

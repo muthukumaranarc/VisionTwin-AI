@@ -61,7 +61,7 @@ fun MachineListScreen(
             )
         },
         containerColor = VTBackground,
-        bottomBar = { VTBottomNav(selected = VTTab.Machines, onSelect = onTabSelected) }
+        bottomBar = { VTBottomNav(selected = VTTab.Dashboard, onSelect = onTabSelected) }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             when {

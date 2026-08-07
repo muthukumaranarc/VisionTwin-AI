@@ -189,6 +189,24 @@ class VisionTwinRepository(
         else throw Exception("Delete failed: ${response.code()}")
     }
 
+    suspend fun sendLearnMessage(machineId: String, message: String, sessionId: String, model: String?): Result<LearnMessageDto> = runCatching {
+        val response = api.sendLearnMessage(machineId, sessionId, LearnMessageRequest(message, model))
+        if (response.isSuccessful) response.body() ?: throw Exception("Empty response")
+        else throw Exception("Failed to send learning message: ${response.code()}")
+    }
+
+    suspend fun getLearnHistory(machineId: String, sessionId: String): Result<List<LearnMessageDto>> = runCatching {
+        val response = api.getLearnHistory(machineId, sessionId)
+        if (response.isSuccessful) response.body() ?: emptyList()
+        else throw Exception("Failed to fetch learning history: ${response.code()}")
+    }
+
+    suspend fun clearLearnHistory(machineId: String, sessionId: String): Result<Unit> = runCatching {
+        val response = api.clearLearnHistory(machineId, sessionId)
+        if (response.isSuccessful) Unit
+        else throw Exception("Failed to clear learning history: ${response.code()}")
+    }
+
     private fun uriToFile(context: Context, uri: Uri, fileName: String): File {
         val file = File(context.cacheDir, fileName)
         context.contentResolver.openInputStream(uri)?.use { input ->

@@ -31,7 +31,7 @@ public class LearnService {
         learnMessageRepository.deleteByMachineIdAndSessionId(machineId, sessionId);
     }
 
-    public LearnMessage sendLearnMessage(UUID machineId, String sessionId, String userMessageText) {
+    public LearnMessage sendLearnMessage(UUID machineId, String sessionId, String userMessageText, String modelOverride) {
         log.info("Sending learning chat message for machine: {}, session: {}", machineId, sessionId);
         Machine machine = machineRepository.findById(machineId)
                 .orElseThrow(() -> new IllegalArgumentException("Machine not found: " + machineId));
@@ -75,7 +75,7 @@ public class LearnService {
         promptBuilder.append("AI: ");
 
         // 5. Generate Response
-        String aiResponseText = aiService.generateText(promptBuilder.toString());
+        String aiResponseText = aiService.generateText(promptBuilder.toString(), modelOverride);
 
         // Fallback to mock if empty response (mock provider or API issue)
         if (aiResponseText == null || aiResponseText.trim().isEmpty()) {

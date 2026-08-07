@@ -162,6 +162,10 @@ public class AIService {
     }
 
     public String generateText(String promptText) {
+        return generateText(promptText, null);
+    }
+
+    public String generateText(String promptText, String modelOverride) {
         if ("mock".equalsIgnoreCase(provider) || apiKey.trim().isEmpty()) {
             return "";
         }
@@ -169,7 +173,7 @@ public class AIService {
             if ("openai".equalsIgnoreCase(provider)) {
                 return callOpenAIText(promptText);
             } else {
-                return callGeminiText(promptText, null);
+                return callGeminiText(promptText, modelOverride);
             }
         } catch (Exception e) {
             log.error("Error generating text via AI provider", e);

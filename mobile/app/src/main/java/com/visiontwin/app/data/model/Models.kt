@@ -80,3 +80,17 @@ data class DiagnosisModelsResponse(
     val default: String = "",
     val models: List<String> = emptyList()
 )
+
+data class LearnMessageDto(
+    val id: String = "",
+    val machineId: String = "",
+    val sessionId: String = "",
+    val sender: String = "",
+    val messageText: String = "",
+    val timestamp: String? = null
+)
+
+data class LearnMessageRequest(
+    val message: String,
+    val model: String? = null
+)

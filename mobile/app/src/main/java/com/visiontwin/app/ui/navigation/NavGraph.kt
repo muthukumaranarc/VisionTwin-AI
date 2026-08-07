@@ -80,6 +80,38 @@ fun NavGraph(
             )
         }
 
+        composable("announcements") {
+            AnnouncementScreen(
+                onTabSelected = { tab ->
+                    navController.navigate(tab.route) {
+                        popUpTo("announcements") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("learn") {
+            LearnScreen(
+                repository = repository,
+                onTabSelected = { tab ->
+                    navController.navigate(tab.route) {
+                        popUpTo("learn") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable("call-experts") {
+            CallExpertsScreen(
+                repository = repository,
+                onTabSelected = { tab ->
+                    navController.navigate(tab.route) {
+                        popUpTo("call-experts") { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable("profile") {
             ProfileScreen(
                 repository = repository,

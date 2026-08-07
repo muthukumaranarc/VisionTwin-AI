@@ -4,6 +4,10 @@ import { getReportDetails, getFileUrl } from '../api/api';
 import type { DiagnosisReport } from '../api/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
+marked.setOptions({ gfm: true, breaks: true });
 
 export default function DiagnosisResult() {
   const { id } = useParams<{ id: string }>();
@@ -78,11 +82,21 @@ export default function DiagnosisResult() {
         <section className="grid gap-8 sm:grid-cols-2">
           <div>
             <h2 className="mb-2 text-sm font-medium text-neutral-700">Diagnosis</h2>
-            <p className="text-[15px] leading-7 text-neutral-800">{report.diagnosisProblem}</p>
+            <div
+              className="markdown-body text-[15px] leading-7 text-neutral-800"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(marked.parse(report.diagnosisProblem || '', { async: false }) as string),
+              }}
+            />
           </div>
           <div>
             <h2 className="mb-2 text-sm font-medium text-neutral-700">Recommended fix</h2>
-            <p className="text-[15px] leading-7 text-neutral-800">{report.diagnosisSolution}</p>
+            <div
+              className="markdown-body text-[15px] leading-7 text-neutral-800"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(marked.parse(report.diagnosisSolution || '', { async: false }) as string),
+              }}
+            />
           </div>
         </section>
 

@@ -26,10 +26,15 @@ export default function Diagnose() {
     getMachines().then((res) => setMachines(res.data)).catch(() => {});
     getDiagnosisModels()
       .then((res) => {
-        setModels(res.data.models.length ? res.data.models : FALLBACK_MODELS);
-        setSelectedModel((prev) => prev || localStorage.getItem(MODEL_STORAGE_KEY) || res.data.default || FALLBACK_MODELS[0]);
+        const list = res.data.models.length ? res.data.models : FALLBACK_MODELS;
+        setModels(list);
+        const defaultPro = list.find(m => m.toLowerCase().includes('pro')) || list[0];
+        setSelectedModel((prev) => prev || localStorage.getItem(MODEL_STORAGE_KEY) || defaultPro);
       })
-      .catch(() => setSelectedModel((prev) => prev || localStorage.getItem(MODEL_STORAGE_KEY) || FALLBACK_MODELS[0]));
+      .catch(() => {
+        const defaultPro = FALLBACK_MODELS.find(m => m.toLowerCase().includes('pro')) || FALLBACK_MODELS[0];
+        setSelectedModel((prev) => prev || localStorage.getItem(MODEL_STORAGE_KEY) || defaultPro);
+      });
   }, []);
 
   useEffect(() => {
