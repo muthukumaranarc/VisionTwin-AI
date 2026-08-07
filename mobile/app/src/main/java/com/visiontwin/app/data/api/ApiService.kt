@@ -118,4 +118,7 @@ interface ApiService {
         @Path("machineId") machineId: String,
         @Query("sessionId") sessionId: String
     ): Response<Unit>
+
+    @GET
+    suspend fun getFileContent(@Url url: String): Response<okhttp3.ResponseBody>
 }

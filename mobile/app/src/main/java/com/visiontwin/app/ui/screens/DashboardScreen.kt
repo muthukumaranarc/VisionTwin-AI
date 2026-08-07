@@ -1,6 +1,8 @@
 package com.visiontwin.app.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Assessment
@@ -14,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.visiontwin.app.data.api.RetrofitClient
 import com.visiontwin.app.data.model.DashboardStats
 import com.visiontwin.app.data.model.DiagnosisReportDto
 import com.visiontwin.app.data.repository.VisionTwinRepository
@@ -44,7 +47,7 @@ fun DashboardScreen(
         }
     }
 
-    LaunchedEffect(Unit) { load() }
+    LaunchedEffect(RetrofitClient.urlVersion.value) { load() }
 
     Scaffold(
         topBar = {
@@ -61,6 +64,7 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             Text("Good morning, Operator", style = MaterialTheme.typography.headlineMedium)

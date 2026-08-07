@@ -3,6 +3,7 @@ package com.visiontwin.app.data.repository
 import android.content.Context
 import android.net.Uri
 import com.visiontwin.app.data.api.ApiService
+import com.visiontwin.app.data.api.RetrofitClient
 import com.visiontwin.app.data.cache.CacheManager
 import com.visiontwin.app.data.model.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -13,9 +14,10 @@ import java.io.File
 import java.io.FileOutputStream
 
 class VisionTwinRepository(
-    private val api: ApiService,
     private val cache: CacheManager
 ) {
+    private val api: ApiService
+        get() = RetrofitClient.apiService
 
     suspend fun getMachines(): Result<List<MachineDto>> = runCatching {
         val response = api.getMachines()
@@ -205,6 +207,16 @@ class VisionTwinRepository(
         val response = api.clearLearnHistory(machineId, sessionId)
         if (response.isSuccessful) Unit
         else throw Exception("Failed to clear learning history: ${response.code()}")
+    }
+
+    suspend fun getFileContent(path: String): Result<String> = runCatching {
+        val url = RetrofitClient.fileUrl(path)
+        val response = api.getFileContent(url)
+        if (response.isSuccessful) {
+            response.body()?.string() ?: ""
+        } else {
+            throw Exception("Failed to load file: ${response.code()}")
+        }
     }
 
     private fun uriToFile(context: Context, uri: Uri, fileName: String): File {

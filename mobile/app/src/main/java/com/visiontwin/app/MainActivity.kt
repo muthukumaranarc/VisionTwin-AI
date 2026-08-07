@@ -20,8 +20,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        RetrofitClient.initialize(applicationContext)
         val cacheManager = CacheManager(applicationContext)
-        val repository = VisionTwinRepository(RetrofitClient.apiService, cacheManager)
+        val repository = VisionTwinRepository(cacheManager)
 
         setContent {
             VisionTwinTheme {

@@ -26,6 +26,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.visiontwin.app.ui.theme.*
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
 
 enum class VTTab(val label: String, val icon: ImageVector, val filledIcon: ImageVector, val route: String) {
     Dashboard("Dashboard", Icons.Filled.Dashboard, Icons.Filled.Dashboard, "dashboard"),
@@ -58,16 +61,49 @@ fun VTTopBar(
         SettingsDialog(onDismiss = { isSettingsOpen = false })
     }
 
-    CenterAlignedTopAppBar(
+    TopAppBar(
         title = {
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = if (showBack) VTOnSurface else VTPrimary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            if (showBack) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = VTOnSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    androidx.compose.foundation.Image(
+                        painter = androidx.compose.ui.res.painterResource(id = com.visiontwin.app.R.drawable.visiontwin_logo),
+                        contentDescription = "VisionTwin Logo",
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .border(1.dp, VTOutlineVariant.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                            .background(Color.White)
+                            .padding(2.dp)
+                    )
+                    Column {
+                        Text(
+                            text = "VisionTwin AI",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = VTPrimary
+                        )
+                        Text(
+                            text = "Operations Center",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = VTOutline,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+                }
+            }
         },
         navigationIcon = {
             if (showBack) {
@@ -92,25 +128,18 @@ fun VTTopBar(
                 }
                 // Profile avatar button
                 IconButton(onClick = { isProfileOpen = true }) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .background(VTPrimaryContainer, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "NY",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = VTOnPrimaryContainer
-                        )
-                    }
+                    AsyncImage(
+                        model = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                        contentDescription = "Profile Avatar",
+                        modifier = Modifier.size(28.dp).clip(CircleShape).border(1.dp, Color.LightGray, CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
                 }
             } else {
                 actions()
             }
         },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = VTSurface,
             titleContentColor = VTPrimary,
             navigationIconContentColor = VTOnSurfaceVariant,
@@ -126,6 +155,7 @@ fun VTBottomNav(selected: VTTab, onSelect: (VTTab) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, VTOutlineVariant.copy(alpha = 0.6f))
+            .navigationBarsPadding()
     ) {
         Row(
             modifier = Modifier
@@ -159,13 +189,13 @@ fun VTBottomNav(selected: VTTab, onSelect: (VTTab) -> Unit) {
                         if (tab == VTTab.Diagnose || tab == VTTab.Learn) {
                             Box(
                                 modifier = Modifier
-                                    .offset(x = 10.dp, y = (-4).dp)
-                                    .background(VTError, RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 4.dp, vertical = 1.dp)
+                                    .offset(x = 12.dp, y = (-6).dp)
+                                    .background(Color(0xFF7C3AED), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 3.dp, vertical = 1.dp)
                             ) {
                                 Text(
                                     "AI",
-                                    fontSize = 7.sp,
+                                    fontSize = 8.sp,
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold
                                 )

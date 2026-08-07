@@ -1,5 +1,8 @@
 package com.visiontwin.app.ui.components
 
+import android.content.Context
+import com.visiontwin.app.data.api.RetrofitClient
+import coil.compose.AsyncImage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -107,14 +110,12 @@ fun ProfileDialog(onDismiss: () -> Unit) {
                     when (activeTab) {
                         "personal" -> {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .background(VTPrimaryContainer, CircleShape),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text("NY", fontWeight = FontWeight.Bold, color = VTOnPrimaryContainer)
-                                }
+                                AsyncImage(
+                                    model = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                                    contentDescription = "Profile Avatar",
+                                    modifier = Modifier.size(48.dp).clip(CircleShape).border(1.dp, Color.LightGray, CircleShape),
+                                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text("Nil Yeager", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = VTOnSurface)
@@ -206,6 +207,10 @@ fun SettingsDialog(onDismiss: () -> Unit) {
     var acousticSens by remember { mutableStateOf(70f) }
     var thermalSens by remember { mutableStateOf(85f) }
     var isDarkMode by remember { mutableStateOf(false) }
+
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember { context.getSharedPreferences("visiontwin_cache", Context.MODE_PRIVATE) }
+    var backendIp by remember { mutableStateOf(prefs.getString("backend_ip", "10.0.2.2") ?: "10.0.2.2") }
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -322,6 +327,17 @@ fun SettingsDialog(onDismiss: () -> Unit) {
                             }
                         }
                         "data" -> {
+                            Text("Backend Connection", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = VTOnSurface)
+                            OutlinedTextField(
+                                value = backendIp,
+                                onValueChange = { backendIp = it },
+                                label = { Text("Server IP / Host") },
+                                placeholder = { Text("e.g. 192.168.1.100 or 10.0.2.2") },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 13.sp, color = VTOnSurface)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text("Telemetry Pipelines", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = VTOnSurface)
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -367,7 +383,16 @@ fun SettingsDialog(onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     Button(
-                        onClick = onDismiss,
+                        onClick = {
+                            prefs.edit().putString("backend_ip", backendIp.trim()).apply()
+                            val formattedUrl = if (backendIp.startsWith("http://") || backendIp.startsWith("https://")) {
+                                if (backendIp.endsWith("/")) backendIp else "$backendIp/"
+                            } else {
+                                "http://${backendIp.trim()}:8080/"
+                            }
+                            RetrofitClient.updateBaseUrl(formattedUrl)
+                            onDismiss()
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = VTPrimary)
                     ) {

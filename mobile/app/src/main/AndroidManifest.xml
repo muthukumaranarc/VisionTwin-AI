@@ -9,9 +9,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/visiontwin_logo"
         android:label="VisionTwin AI"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/visiontwin_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.VisionTwinAI"
         android:usesCleartextTraffic="true">

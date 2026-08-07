@@ -5,26 +5,23 @@ import type { Machine, DashboardStats } from '../api/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Home() {
-  const [health, setHealth] = useState<{ status: string; service: string } | null>(null);
   const [machines, setMachines] = useState<Machine[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [healthRes, machinesRes, statsRes] = await Promise.allSettled([
+        const [, machinesRes, statsRes] = await Promise.allSettled([
           getHealth(),
           getMachines(),
           getDashboardStats().catch(() => null), // admin endpoint may fail
         ]);
 
-        if (healthRes.status === 'fulfilled') setHealth(healthRes.value.data);
         if (machinesRes.status === 'fulfilled') setMachines(machinesRes.value.data);
         if (statsRes.status === 'fulfilled' && statsRes.value) setStats(statsRes.value.data);
-      } catch {
-        setError('Failed to connect to the backend. Make sure the server is running.');
+      } catch (err: any) {
+        console.error('Failed to load dashboard data', err);
       } finally {
         setLoading(false);
       }

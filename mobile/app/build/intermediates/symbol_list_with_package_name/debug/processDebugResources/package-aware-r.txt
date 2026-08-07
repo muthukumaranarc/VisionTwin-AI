@@ -3032,6 +3032,7 @@ drawable notify_panel_notification_icon_bg
 drawable test_level_drawable
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
+drawable visiontwin_logo
 id ALT
 id BOTTOM_END
 id BOTTOM_START

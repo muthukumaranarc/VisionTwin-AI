@@ -41,11 +41,11 @@
 26-->[androidx.core:core:1.15.0] C:\Users\Muthu\.gradle\caches\9.0.0\transforms\b8538d652c89bed88de820b22cc6462d\transformed\core-1.15.0\AndroidManifest.xml:28:18-86
 27        android:debuggable="true"
 28        android:extractNativeLibs="false"
-29        android:icon="@mipmap/ic_launcher"
-29-->C:\Users\Muthu\Documents\Git\VisionTwin-AI\mobile\app\src\main\AndroidManifest.xml:12:9-43
+29        android:icon="@drawable/visiontwin_logo"
+29-->C:\Users\Muthu\Documents\Git\VisionTwin-AI\mobile\app\src\main\AndroidManifest.xml:12:9-49
 30        android:label="VisionTwin AI"
 30-->C:\Users\Muthu\Documents\Git\VisionTwin-AI\mobile\app\src\main\AndroidManifest.xml:13:9-38
-31        android:roundIcon="@mipmap/ic_launcher_round"
+31        android:roundIcon="@drawable/visiontwin_logo"
 31-->C:\Users\Muthu\Documents\Git\VisionTwin-AI\mobile\app\src\main\AndroidManifest.xml:14:9-54
 32        android:supportsRtl="true"
 32-->C:\Users\Muthu\Documents\Git\VisionTwin-AI\mobile\app\src\main\AndroidManifest.xml:15:9-35

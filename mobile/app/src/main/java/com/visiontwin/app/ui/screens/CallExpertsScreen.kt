@@ -25,6 +25,8 @@ import com.visiontwin.app.data.model.MachineDto
 import com.visiontwin.app.data.repository.VisionTwinRepository
 import com.visiontwin.app.ui.components.*
 import com.visiontwin.app.ui.theme.*
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.launch
 
 interface MobileExpert {
@@ -34,6 +36,7 @@ interface MobileExpert {
     val status: String // "available" or "busy"
     val nextFreeTime: String?
     val specialties: List<String>
+    val avatarUrl: String
 }
 
 data class MobileExpertModel(
@@ -42,7 +45,8 @@ data class MobileExpertModel(
     override val role: String,
     override val status: String,
     override val nextFreeTime: String?,
-    override val specialties: List<String>
+    override val specialties: List<String>,
+    override val avatarUrl: String
 ) : MobileExpert
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,7 +71,8 @@ fun CallExpertsScreen(
             "Chief Vibration Analyst",
             "available",
             null,
-            listOf("CNC Spindles", "High-speed Gearboxes")
+            listOf("CNC Spindles", "High-speed Gearboxes"),
+            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
         ),
         MobileExpertModel(
             "2",
@@ -75,7 +80,8 @@ fun CallExpertsScreen(
             "Lead Predictive Maintenance",
             "available",
             null,
-            listOf("Pneumatics", "Acoustic Detection")
+            listOf("Pneumatics", "Acoustic Detection"),
+            "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
         ),
         MobileExpertModel(
             "3",
@@ -83,7 +89,8 @@ fun CallExpertsScreen(
             "Senior Automation Specialist",
             "busy",
             "Free in 45 mins (at 11:30 AM)",
-            listOf("PLC Programming", "Robotic Arms")
+            listOf("PLC Programming", "Robotic Arms"),
+            "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
         ),
         MobileExpertModel(
             "4",
@@ -91,7 +98,8 @@ fun CallExpertsScreen(
             "Hydraulic Systems Supervisor",
             "busy",
             "Free at 2:00 PM today",
-            listOf("High-Pressure Pumps", "Fluid Dynamics")
+            listOf("High-Pressure Pumps", "Fluid Dynamics"),
+            "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
         )
     )
 
@@ -151,19 +159,12 @@ fun CallExpertsScreen(
                 VTCard {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .background(VTPrimaryContainer, CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    expert.name.split(" ").map { it.take(1) }.joinToString(""),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    color = VTOnPrimaryContainer
-                                )
-                            }
+                            AsyncImage(
+                                model = expert.avatarUrl,
+                                contentDescription = expert.name,
+                                modifier = Modifier.size(36.dp).clip(CircleShape).border(1.dp, Color.LightGray, CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(expert.name, fontSize = 15.sp, fontWeight = FontWeight.Bold)
@@ -204,19 +205,12 @@ fun CallExpertsScreen(
                 VTCard {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .background(VTSurfaceContainerHighest, CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    expert.name.split(" ").map { it.take(1) }.joinToString(""),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    color = VTOnSurfaceVariant
-                                )
-                            }
+                            AsyncImage(
+                                model = expert.avatarUrl,
+                                contentDescription = expert.name,
+                                modifier = Modifier.size(36.dp).clip(CircleShape).border(1.dp, Color.LightGray, CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(expert.name, fontSize = 15.sp, fontWeight = FontWeight.Bold)

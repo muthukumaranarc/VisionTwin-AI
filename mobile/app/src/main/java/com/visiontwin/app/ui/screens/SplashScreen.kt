@@ -1,8 +1,13 @@
 package com.visiontwin.app.ui.screens
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.Icon
@@ -57,14 +62,16 @@ fun SplashScreen(onNavigateToDashboard: () -> Unit) {
                 modifier = Modifier
                     .size(88.dp)
                     .scale(scaleAnim.value)
-                    .background(VTPrimaryContainer, androidx.compose.foundation.shape.RoundedCornerShape(24.dp)),
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Color.White)
+                    .border(1.dp, Color(0xFFC2C6D8), RoundedCornerShape(24.dp))
+                    .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Psychology,
+                Image(
+                    painter = painterResource(id = com.visiontwin.app.R.drawable.visiontwin_logo),
                     contentDescription = "Logo",
-                    tint = Color.White,
-                    modifier = Modifier.size(44.dp)
+                    modifier = Modifier.fillMaxSize()
                 )
             }
             Spacer(modifier = Modifier.height(28.dp))

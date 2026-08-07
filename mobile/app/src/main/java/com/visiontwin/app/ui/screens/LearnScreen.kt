@@ -1,6 +1,9 @@
 package com.visiontwin.app.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.visiontwin.app.data.model.LearnMessageDto
 import com.visiontwin.app.data.model.MachineDto
 import com.visiontwin.app.data.repository.VisionTwinRepository
+import com.visiontwin.app.data.api.RetrofitClient
 import com.visiontwin.app.ui.components.*
 import com.visiontwin.app.ui.theme.*
 import kotlinx.coroutines.launch
@@ -41,7 +45,8 @@ fun LearnScreen(
     var isLoading by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(RetrofitClient.urlVersion.value) {
+        isLoading = true
         repository.getMachines().onSuccess { machines = it }
         isLoading = false
     }
@@ -256,12 +261,19 @@ fun ActiveLearnWorkspace(
                                         .background(bubbleColor)
                                         .padding(12.dp)
                                 ) {
-                                    Text(
-                                        text = msg.messageText,
-                                        color = textColor,
-                                        fontSize = 13.sp,
-                                        lineHeight = 18.sp
-                                    )
+                                    if (isUser) {
+                                        Text(
+                                            text = msg.messageText,
+                                            color = textColor,
+                                            fontSize = 13.sp,
+                                            lineHeight = 18.sp
+                                        )
+                                    } else {
+                                        MarkdownText(
+                                            markdown = msg.messageText,
+                                            textColor = textColor
+                                        )
+                                    }
                                 }
                                 Text(
                                     text = msg.timestamp?.takeLast(11)?.take(5) ?: "",
@@ -327,24 +339,95 @@ fun ActiveLearnWorkspace(
                 }
             } else {
                 // Manual Twin document viewer
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Filled.Book, contentDescription = null, tint = VTOutline, modifier = Modifier.size(48.dp))
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text("Technical Manual Twin", fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                        Text(
-                            "Document mapping is synchronized. Use the Study Guide Chat tab to retrieve safety instructions, cleaning protocols, or component parts directly.",
-                            fontSize = 13.sp,
-                            color = VTOnSurfaceVariant,
-                            modifier = Modifier.padding(16.dp),
-                            lineHeight = 18.sp,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
+                var selectedDoc by remember { mutableStateOf("manual") } // "manual" or "guide"
+                val manualPath = machine.manualPdfPath
+                val userGuidePath = machine.userGuidePdfPath
+
+                var docContent by remember { mutableStateOf<String?>(null) }
+                var docLoading by remember { mutableStateOf(false) }
+                var docError by remember { mutableStateOf<String?>(null) }
+
+                val currentPath = if (selectedDoc == "manual") manualPath else userGuidePath
+
+                LaunchedEffect(selectedDoc, currentPath) {
+                    if (currentPath.isNullOrBlank()) {
+                        docContent = null
+                        docError = null
+                        return@LaunchedEffect
+                    }
+                    docLoading = true
+                    docError = null
+                    repository.getFileContent(currentPath)
+                        .onSuccess {
+                            docContent = it
+                            docLoading = false
+                        }
+                        .onFailure {
+                            docError = "Failed to load document: ${it.message}"
+                            docLoading = false
+                        }
+                }
+
+                Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                    // Document selector tabs if both are available, or simple label
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { selectedDoc = "manual" },
+                            modifier = Modifier.weight(1f).height(36.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = if (selectedDoc == "manual") VTPrimaryContainer.copy(alpha = 0.1f) else Color.Transparent,
+                                contentColor = if (selectedDoc == "manual") VTPrimary else VTOnSurfaceVariant
+                            ),
+                            border = BorderStroke(1.dp, if (selectedDoc == "manual") VTPrimary else VTOutlineVariant)
+                        ) {
+                            Text("Manual", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                        OutlinedButton(
+                            onClick = { selectedDoc = "guide" },
+                            modifier = Modifier.weight(1f).height(36.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = if (selectedDoc == "guide") VTPrimaryContainer.copy(alpha = 0.1f) else Color.Transparent,
+                                contentColor = if (selectedDoc == "guide") VTPrimary else VTOnSurfaceVariant
+                            ),
+                            border = BorderStroke(1.dp, if (selectedDoc == "guide") VTPrimary else VTOutlineVariant)
+                        ) {
+                            Text("User Guide", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    Divider(color = VTOutlineVariant.copy(alpha = 0.4f), modifier = Modifier.padding(bottom = 12.dp))
+
+                    if (currentPath.isNullOrBlank()) {
+                        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = if (selectedDoc == "manual") "No manual uploaded for this machine." else "No user guide uploaded for this machine.",
+                                color = VTOutline,
+                                fontSize = 13.sp
+                            )
+                        }
+                    } else if (docLoading) {
+                        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = VTPrimary)
+                        }
+                    } else if (docError != null) {
+                        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            Text(docError!!, color = VTError, fontSize = 13.sp)
+                        }
+                    } else {
+                        // Display the markdown text!
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            MarkdownText(markdown = docContent ?: "")
+                        }
                     }
                 }
             }

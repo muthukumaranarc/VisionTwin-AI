@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
+import com.visiontwin.app.data.api.RetrofitClient
 import com.visiontwin.app.data.model.MachineDto
 import com.visiontwin.app.data.repository.VisionTwinRepository
 import com.visiontwin.app.ui.components.*
@@ -106,7 +107,7 @@ fun DiagnoseForm(
     )
     var currentMsgIndex by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(RetrofitClient.urlVersion.value) {
         repository.getMachines().onSuccess {
             machines = it
             if (machineId.isBlank() && it.isNotEmpty()) machineId = it.first().id
@@ -251,7 +252,10 @@ fun DiagnoseForm(
                     onClick = {
                         machineId = m.id
                         machineMenuExpanded = false
-                    }
+                    },
+                    colors = MenuDefaults.itemColors(
+                        textColor = VTOnSurface
+                    )
                 )
             }
         }
@@ -272,7 +276,10 @@ fun DiagnoseForm(
                     onClick = {
                         selectedModel = m
                         modelMenuExpanded = false
-                    }
+                    },
+                    colors = MenuDefaults.itemColors(
+                        textColor = VTOnSurface
+                    )
                 )
             }
         }
@@ -283,12 +290,21 @@ fun DiagnoseForm(
         OutlinedTextField(
             value = problemDescription,
             onValueChange = { problemDescription = it },
-            label = { Text("Describe the problem") },
-            placeholder = { Text("e.g. The shaft seems stuck and is making a grinding noise") },
+            label = { Text("Describe the problem", color = VTOnSurfaceVariant) },
+            placeholder = { Text("e.g. The shaft seems stuck and is making a grinding noise", color = VTOutline) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             maxLines = 5,
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            textStyle = androidx.compose.ui.text.TextStyle(color = VTOnSurface),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = VTOnSurface,
+                unfocusedTextColor = VTOnSurface,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = VTPrimary,
+                unfocusedBorderColor = VTOutlineVariant
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -416,7 +432,8 @@ private fun DropdownField(
                     maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    color = VTOnSurface
                 )
                 Icon(Icons.Filled.ArrowDropDown, contentDescription = null, tint = VTOnSurfaceVariant)
             }
