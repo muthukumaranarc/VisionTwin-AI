@@ -31,7 +31,7 @@ val VTSurfaceContainerHighest = Color(0xFFDAE2FD)
 val VTOnSurface = Color(0xFF131B2E)
 val VTOnSurfaceVariant = Color(0xFF424656)
 val VTOutline = Color(0xFF727687)
-val VTOutlineVariant = Color(0xFFC2C6D8)
+val VTOutlineVariant = Color(0xFF2F3033)
 val VTSurfaceVariant = Color(0xFFDAE2FD)
 
 val VTSecondary = Color(0xFF585F6C)

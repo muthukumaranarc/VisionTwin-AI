@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
@@ -90,6 +92,21 @@ fun DiagnoseForm(
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) imageUri = cameraUri
     }
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            val file = File(context.cacheDir, "camera_capture_${System.currentTimeMillis()}.jpg")
+            cameraUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            cameraLauncher.launch(cameraUri!!)
+        } else {
+            android.widget.Toast.makeText(
+                context,
+                "Camera permission is required to take photos",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) imageUri = uri
     }
@@ -112,11 +129,18 @@ fun DiagnoseForm(
             machines = it
             if (machineId.isBlank() && it.isNotEmpty()) machineId = it.first().id
         }
-        repository.getDiagnosisModels().onSuccess {
-            models = it.models
-            selectedModel = it.default
+        repository.getDiagnosisModels().onSuccess { res ->
+            if (res.models.isNotEmpty()) {
+                models = res.models
+                selectedModel = res.default.ifBlank { res.models.first() }
+            } else {
+                models = listOf("gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash")
+                selectedModel = "gemini-1.5-flash"
+            }
+        }.onFailure {
+            models = listOf("gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash")
+            selectedModel = "gemini-1.5-flash"
         }
-        if (models.isEmpty()) models = listOf("gemini-3.6-flash")
     }
 
     LaunchedEffect(isAnalyzing) {
@@ -210,9 +234,18 @@ fun DiagnoseForm(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(
                 onClick = {
-                    val file = File(context.cacheDir, "camera_capture_${System.currentTimeMillis()}.jpg")
-                    cameraUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-                    cameraLauncher.launch(cameraUri!!)
+                    val hasCameraPermission = androidx.core.content.ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.CAMERA
+                    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+                    if (hasCameraPermission) {
+                        val file = File(context.cacheDir, "camera_capture_${System.currentTimeMillis()}.jpg")
+                        cameraUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+                        cameraLauncher.launch(cameraUri!!)
+                    } else {
+                        cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                    }
                 },
                 modifier = Modifier.weight(1f).height(44.dp),
                 shape = RoundedCornerShape(8.dp),
@@ -221,7 +254,7 @@ fun DiagnoseForm(
             ) {
                 Icon(Icons.Filled.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Camera", fontSize = 13.sp)
+                Text("Camera", fontSize = 13.sp, color = VTOnSurface)
             }
             OutlinedButton(
                 onClick = { galleryLauncher.launch("image/*") },
@@ -232,7 +265,7 @@ fun DiagnoseForm(
             ) {
                 Icon(Icons.Filled.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Gallery", fontSize = 13.sp)
+                Text("Gallery", fontSize = 13.sp, color = VTOnSurface)
             }
         }
 
@@ -241,14 +274,22 @@ fun DiagnoseForm(
         // Machine selector
         DropdownField(
             label = "Machine",
-            value = machines.firstOrNull { it.id == machineId }?.name ?: "Select a machine...",
+            value = machines.find { it.id == machineId }?.name ?: "Select a machine...",
             expanded = machineMenuExpanded,
             onExpand = { machineMenuExpanded = true; modelMenuExpanded = false },
             onDismiss = { machineMenuExpanded = false }
         ) {
             machines.forEach { m ->
                 DropdownMenuItem(
-                    text = { Text("${m.name} (${m.manufacturer} ${m.model})", maxLines = 1) },
+                    text = { 
+                        Text(
+                            text = "${m.name} (${m.manufacturer} ${m.model})", 
+                            color = VTOnSurface,
+                            fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
                     onClick = {
                         machineId = m.id
                         machineMenuExpanded = false
@@ -272,7 +313,15 @@ fun DiagnoseForm(
         ) {
             models.forEach { m ->
                 DropdownMenuItem(
-                    text = { Text(m, maxLines = 1) },
+                    text = { 
+                        Text(
+                            text = m, 
+                            color = VTOnSurface,
+                            fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
                     onClick = {
                         selectedModel = m
                         modelMenuExpanded = false
@@ -418,7 +467,8 @@ private fun DropdownField(
             color = VTOnSurfaceVariant,
             modifier = Modifier.padding(bottom = 4.dp)
         )
-        Box(modifier = Modifier.fillMaxWidth()) {
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val width = maxWidth
             OutlinedButton(
                 onClick = onExpand,
                 modifier = Modifier.fillMaxWidth().height(48.dp),
@@ -430,7 +480,7 @@ private fun DropdownField(
                     value,
                     fontSize = 14.sp,
                     maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Start,
                     color = VTOnSurface
@@ -440,7 +490,7 @@ private fun DropdownField(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = onDismiss,
-                modifier = Modifier.fillMaxWidth(0.9f),
+                modifier = Modifier.width(width),
                 containerColor = Color.White
             ) {
                 content()

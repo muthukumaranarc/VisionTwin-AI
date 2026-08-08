@@ -30,7 +30,6 @@
         android:label="VisionTwin AI"
         android:roundIcon="@drawable/visiontwin_logo"
         android:supportsRtl="true"
-        android:testOnly="true"
         android:theme="@style/Theme.VisionTwinAI"
         android:usesCleartextTraffic="true" >
         <activity

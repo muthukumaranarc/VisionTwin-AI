@@ -171,17 +171,6 @@ fun ActiveLearnWorkspace(
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
-                actions = {
-                    IconButton(onClick = {
-                        scope.launch {
-                            repository.clearLearnHistory(machine.id, sessionId)
-                            sessionId = UUID.randomUUID().toString()
-                            messages = emptyList()
-                        }
-                    }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Clear Chat", tint = Color.Red)
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = VTSurface)
             )
         },
@@ -384,7 +373,7 @@ fun ActiveLearnWorkspace(
                             ),
                             border = BorderStroke(1.dp, if (selectedDoc == "manual") VTPrimary else VTOutlineVariant)
                         ) {
-                            Text("Manual", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text("Manual", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = VTOnSurface)
                         }
                         OutlinedButton(
                             onClick = { selectedDoc = "guide" },
@@ -396,7 +385,7 @@ fun ActiveLearnWorkspace(
                             ),
                             border = BorderStroke(1.dp, if (selectedDoc == "guide") VTPrimary else VTOutlineVariant)
                         ) {
-                            Text("User Guide", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text("User Guide", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = VTOnSurface)
                         }
                     }
 
